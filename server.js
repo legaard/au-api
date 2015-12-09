@@ -22,21 +22,25 @@ http.createServer(function (req, res) {
       console.log("Something went wrong!");
       res.end("Things did not work out!");
     } else {
-      res.writeHead(200, {'Content-Type' : 'text/plain'});
-      res.end(result);
+      res.writeHead(200, {'Content-Type' : 'text/html'});
+
+      var scheduleObject = getScheduleObjectFromString(result);
+      res.end(scheduleObject);
     }
   });
 
 }).listen(port);
 
-//Request the service at AU
+//Request the schedule service at AU
 var getData = function(callback){
+
+  //Creating a cookie and the url to use
   var j = request.jar();
   var cookie = request.cookie('ASPSESSIONIDCQBCCDBC=HHHMMCNDODADCJHKPPPAMJGA');
   var url = 'http://services.science.au.dk/apps/skema/ElevSkema.asp';
   j.setCookie(cookie, url);
 
-  request.post({url: url, jar: j, form: {"B1": "S%F8g", "aarskort" : aarskort}}, function (error, response, body) {
+  request.post({url: url, jar: j, form: {'B1' : 'S%F8g', 'aarskort' : aarskort}}, function (error, response, body) {
     if (!error && response.statusCode == 200) {
       callback(null, body);
     } else {
@@ -44,4 +48,9 @@ var getData = function(callback){
     }
   });
 
+};
+
+var getScheduleObjectFromString = function (string){
+  //Use the library 'htmlparser2'
+  return string;
 };
