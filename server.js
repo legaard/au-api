@@ -2,6 +2,7 @@
 var request = require('request');
 var http = require('http');
 var url = require('url');
+var htmlparser = require('htmlparser2');
 
 var port = 8080;
 var aarskort;
@@ -24,8 +25,7 @@ http.createServer(function (req, res) {
       res.end('Things did not work out!');
       console.log('Something went wrong!');
     } else {
-      res.writeHead(200, {'Content-Type' : 'text/html'});
-
+      res.writeHead(200, {'Content-Type' : 'application/json'});
       var scheduleObject = getScheduleObjectFromString(result);
       res.end(scheduleObject);
     }
@@ -51,6 +51,7 @@ var getData = function(callback){
   });
 };
 
+//Function used to update the cookie
 var updateCookie = function(){
   var url = 'http://services.science.au.dk/apps/skema/VaelgElevskema.asp?webnavn=skema';
   request.post(url, function (error, response, body) {
@@ -63,9 +64,28 @@ var updateCookie = function(){
   });
 };
 
+//Method to transform html to json
 var getScheduleObjectFromString = function (string){
-  //Use the library 'htmlparser2'
-  return string;
+
+  var jsonToReturn = {};
+  //Get body for html
+  var body = htmlparser.parseDOM(string)[2].children[3].children;
+
+  for (var i = 0; i < body.length; i++) {
+
+    //Retrive the name of the student
+    if(body[i].name === 'h2'){
+      var data = body[i].children;
+      for (var j = 0; j < data.length; j++) {
+        if(data[j].type == 'text'){
+          jsonToReturn.student = data[j].data.split("for")[1].trim();
+        }
+      }
+
+    }
+  }
+  console.log(jsonToReturn);
+  return JSON.stringify(jsonToReturn);
 };
 
 //Update cookie once and then every 10 minutes
