@@ -6,7 +6,7 @@ var htmlparser = require('htmlparser2');
 
 var port = 8080;
 var aarskort;
-var auCookie;
+var auCookie = "";
 
 //Create a server
 http.createServer(function (req, res) {
@@ -26,8 +26,8 @@ http.createServer(function (req, res) {
       console.log('Something went wrong!');
     } else {
       res.writeHead(200, {'Content-Type' : 'application/json'});
-      var scheduleObject = getScheduleObjectFromString(result);
-      res.end(scheduleObject);
+      var responseObject = getScheduleObjectFromString(result);
+      res.end(responseObject);
     }
   });
 
@@ -42,7 +42,13 @@ var getData = function(callback){
   var url = 'http://services.science.au.dk/apps/skema/ElevSkema.asp';
   j.setCookie(cookie, url);
 
-  request.post({url: url, jar: j, form: {'B1' : 'S%F8g', 'aarskort' : aarskort}}, function (error, response, body) {
+  var options = {
+    url: url,
+    jar: j,
+    form: {'B1' : 'S%F8g', 'aarskort' : aarskort},
+ };
+
+  request.post(options, function (error, response, body) {
     if (!error && response.statusCode == 200) {
       callback(null, body);
     } else {
@@ -68,6 +74,11 @@ var updateCookie = function(){
 var getScheduleObjectFromString = function (string){
 
   var jsonToReturn = {};
+  jsonToReturn.courses = [];
+  var courses = [];
+  var student;
+
+
   //Get body for html
   var body = htmlparser.parseDOM(string)[2].children[3].children;
 
@@ -81,9 +92,28 @@ var getScheduleObjectFromString = function (string){
           jsonToReturn.student = data[j].data.split("for")[1].trim();
         }
       }
-
     }
+
+    //Retrieve the course titles
+    if(body[i].name === 'h3'){
+      jsonToReturn.courses.push(body[i].children[0].data);
+    }
+
+    //Retrieve individual courses
+    if(body[i].name === 'table'){
+      var tableRows = body[i].children[0];
+
+      for (var k = 0; k < tableRows.length; k++) {
+        if (tableRows[k].name === 'tr') {
+          console.log('hurraaaa!');
+        }
+      }
+    }
+
   }
+
+
+
   console.log(jsonToReturn);
   return JSON.stringify(jsonToReturn);
 };
