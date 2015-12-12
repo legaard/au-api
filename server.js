@@ -19,6 +19,86 @@ http.createServer(function (req, res) {
     res.end('Missing url param: aarskort');
   }
 
+  if(aarskort === 'test'){
+    res.writeHead(200, {'Content-Type' : 'application/json'});
+    res.end(JSON.stringify({
+      studentId : 201205397,
+      studentName: 'Lasse Legaard',
+      courses : [
+        {
+          course: 'Pervasive Positioning',
+          day: 'Mandag',
+          time: '11 - 12',
+          week: 'uge 35-41',
+          place: '5794-118 (Åbogade 40)'
+        },
+        {
+          course: 'Pervasive Positioning',
+          day: 'Onsdag',
+          time: '9 - 11',
+          week: 'uge 36',
+          place: 'Lokale: bygning 1584, lokale 124 (Langelandsgade 139)'
+        },
+        {
+          course: 'Pervasive Positioning',
+          day: 'Onsdag',
+          time: '9 - 11',
+          week: 'uge 35, 37-41',
+          place: '5794-118 (Åbogade 40)'
+        },
+        {
+          course: 'Interaktive Rum',
+          day: 'Onsdag',
+          time: '9 - 15',
+          week: 'uge 35, 45-51',
+          place: 'ny192 (5335-192)'
+        },
+        {
+          course: 'Kontekst bevidsthed',
+          day: 'Mandag',
+          time: '11 - 12',
+          week: 'uge 45-51',
+          place: '5794-118 (Åbogade 40)'
+        },
+        {
+          course: 'Kontekst bevidsthed',
+          day: 'Tirsdag',
+          time: '14 - 16',
+          week: 'uge 45-51',
+          place: 'Store Aud., IT-huset (5510-103)'
+        },
+        {
+          course: 'Anvanceret Web Programmering',
+          day: 'Mandag',
+          time: '14 - 17',
+          week: 'uge 45-51',
+          place: 'Store Aud., IT-huset (5510-103)'
+        },
+        {
+          course: 'Cloud Computing and Architecture',
+          day: 'Mandag',
+          time: '14 - 17',
+          week: 'uge 40',
+          place: 'Auditorium I (1514-213)'
+        },
+        {
+          course: 'Cloud Computing and Architecture',
+          day: 'Mandag',
+          time: '14 - 17',
+          week: 'uge 35-39, 41',
+          place: 'Store Aud., IT-huset (5510-103)'
+        },
+        {
+          course: 'Shape Changing Interfaces',
+          day: 'Tirsdag',
+          time: '9 - 15',
+          week: 'uge 35-41',
+          place: 'Stibitz-123, Åbogade'
+        }
+      ]
+    }));
+  }
+
   getData(function(error, result){
     if(error){
       res.writeHead(500, {'Content-Type' : 'text/plain'});
@@ -111,10 +191,6 @@ var getScheduleObjectFromString = function (string){
     }
 
   }
-
-
-
-  console.log(jsonToReturn);
   return JSON.stringify(jsonToReturn);
 };
 
