@@ -19,6 +19,7 @@ http.createServer(function (req, res) {
     res.end('Missing url param: aarskort');
   }
 
+  //Fake data
   if(aarskort === 'test'){
     res.writeHead(200, {'Content-Type' : 'application/json'});
     res.end(JSON.stringify({
@@ -29,70 +30,70 @@ http.createServer(function (req, res) {
           course: 'Pervasive Positioning',
           day: 'Mandag',
           time: '11 - 12',
-          week: 'uge 35-41',
+          week: '35-41',
           place: '5794-118 (Åbogade 40)'
         },
         {
           course: 'Pervasive Positioning',
           day: 'Onsdag',
           time: '9 - 11',
-          week: 'uge 36',
+          week: '36',
           place: 'Lokale: bygning 1584, lokale 124 (Langelandsgade 139)'
         },
         {
           course: 'Pervasive Positioning',
           day: 'Onsdag',
           time: '9 - 11',
-          week: 'uge 35, 37-41',
+          week: '35, 37-41',
           place: '5794-118 (Åbogade 40)'
         },
         {
           course: 'Interaktive Rum',
           day: 'Onsdag',
           time: '9 - 15',
-          week: 'uge 35, 45-51',
+          week: '35, 45-51',
           place: 'ny192 (5335-192)'
         },
         {
           course: 'Kontekst bevidsthed',
           day: 'Mandag',
           time: '11 - 12',
-          week: 'uge 45-51',
+          week: '45-51',
           place: '5794-118 (Åbogade 40)'
         },
         {
           course: 'Kontekst bevidsthed',
           day: 'Tirsdag',
           time: '14 - 16',
-          week: 'uge 45-51',
+          week: '45-51',
           place: 'Store Aud., IT-huset (5510-103)'
         },
         {
           course: 'Anvanceret Web Programmering',
           day: 'Mandag',
           time: '14 - 17',
-          week: 'uge 45-51',
+          week: '45-51',
           place: 'Store Aud., IT-huset (5510-103)'
         },
         {
           course: 'Cloud Computing and Architecture',
           day: 'Mandag',
           time: '14 - 17',
-          week: 'uge 40',
+          week: '40',
           place: 'Auditorium I (1514-213)'
         },
         {
           course: 'Cloud Computing and Architecture',
           day: 'Mandag',
           time: '14 - 17',
-          week: 'uge 35-39, 41',
+          week: '35-39, 41',
           place: 'Store Aud., IT-huset (5510-103)'
         },
         {
           course: 'Shape Changing Interfaces',
           day: 'Tirsdag',
           time: '9 - 15',
-          week: 'uge 35-41',
+          week: '35-41',
           place: 'Stibitz-123, Åbogade'
         }
       ]
@@ -155,14 +156,14 @@ var getScheduleObjectFromString = function (string){
 
   var jsonToReturn = {};
   jsonToReturn.courses = [];
-  var courses = [];
-  var student;
-
 
   //Get body for html
   var body = htmlparser.parseDOM(string)[2].children[3].children;
 
   for (var i = 0; i < body.length; i++) {
+    var courseName = "";
+    var week = "";
+
 
     //Retrive the name of the student
     if(body[i].name === 'h2'){
