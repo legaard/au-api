@@ -3,8 +3,7 @@ var request = require('request'),
 http = require('http'),
 url = require('url'),
 htmlparser = require('htmlparser2'),
-fs = require('fs'),
-Iconv = require('iconv').Iconv;
+fs = require('fs');
 
 var port = 8080;
 var aarskort;
@@ -37,8 +36,7 @@ http.createServer(function (req, res) {
       console.log('Something went wrong!');
     } else {
       res.writeHead(200, {'Content-Type' : 'application/json; charset=utf-8'});
-      var responseObject = builder.createJSONObjectFromHTML(result);
-      res.end(JSON.stringify(responseObject));
+      res.end(JSON.stringify(builder.createJSONObjectFromHTML(result)));
     }
   });
 
@@ -92,6 +90,7 @@ var builder = (function () {
 
   var res = {};
   res.courses = [];
+  var studentName = '';
 
   return{
     init: function(studentId){
@@ -102,60 +101,51 @@ var builder = (function () {
       return res.studentId;
     },
 
-    clear: function(){
-      res = {};
-    },
-
     createJSONObjectFromHTML: function (htmlString) {
 
       //Get body for html
       var body = htmlparser.parseDOM(htmlString)[2].children[3].children;
 
       for (var i = 0; i < body.length; i++) {
-        //New course
-        var studentName = "";
-        var course = {};
+        var courseName = '';
 
         //Retrive the name of the student
         if(body[i].name === 'h2'){
-          var data = body[i].children;
-          for (var j = 0; j < data.length; j++) {
-            if(data[j].type == 'text'){
-              studentName = data[j].data.split("for")[1].trim();
-            }
-          }
+          studentName = body[i].children[0].data.split('for')[1].trim();
         }
 
         //Retrieve the course title
         if(body[i].name === 'h3'){
-          course.courseName = body[i].children[0].data;
+          this.courseName = body[i].children[0].data;
         }
 
         //Retrieve individual course data
         if(body[i].name === 'table'){
-          var tableRows = body[i].children[0];
+          var tableRow = body[i].children;
 
-          for (var k = 0; k < tableRows.length; k++) {
-            if (tableRows[k].name === 'tr') {
-              console.log('hurraaaa!');
+          for (var k = 0; k < tableRow.length; k++) {
+            var course = {};
+            if (tableRow[k].name === 'tr') {
+              course.courseName = this.courseName;
+              course.link = tableRow[k].children[0].children[0].attribs ? 'http://services.science.au.dk/apps/skema/' + tableRow[k].children[0].children[0].attribs.href : '';
+              course.day = tableRow[k].children[1].children[0] ? tableRow[k].children[1].children[0].data : '';
+              course.time = tableRow[k].children[2].children[0] ? tableRow[k].children[2].children[0].data.replace(/\s/g, '').trim() : '';
+              course.week = tableRow[k].children[4].children[0] ? tableRow[k].children[4].children[0].data.replace(/uge/g, '').trim() : '';
+              course.location = tableRow[k].children[5].children[0] ? tableRow[k].children[5].children[0].children[0].data : '';
+            }
+            //Pushing course to courses
+            if(JSON.stringify(course) !== '{}'){
+              res.courses.push(course);
             }
           }
         }
 
-        //Building the JSON object
-        if(JSON.stringify(course) !== '{}'){
-          res.courses.push(course);
-        }
-
+        //Adding student name
         if(studentName !== ''){
           res.studentName = studentName;
         }
       }
       return res;
-    },
-
-    buildResponseObject: function (){
-      return{};
     },
 
     getTestObject: function (callback){
