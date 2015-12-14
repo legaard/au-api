@@ -24,7 +24,7 @@ http.createServer(function (req, res) {
   //Respond with a fake data object
   if(aarskort === 'test'){
     res.writeHead(200, {'Content-Type' : 'application/json; charset=utf-8'});
-    var data = builder.getTestObject(function(data){
+    var data = Builder.getTestObject(function(data){
       res.end(data);
     });
   }
@@ -36,13 +36,11 @@ http.createServer(function (req, res) {
       console.log('Something went wrong!');
     } else {
       res.writeHead(200, {'Content-Type' : 'application/json; charset=utf-8'});
-      res.end(JSON.stringify(builder.createJSONObjectFromHTML(result)));
+      res.end(JSON.stringify(Builder.createJSONObjectFromHTML(result)));
     }
   });
 
 }).listen(port);
-
-/********** MODULES **********/
 
 //Request the schedule service at AU
 var getData = function(callback){
@@ -75,7 +73,7 @@ var getData = function(callback){
 //Function used to update the cookie
 var updateCookie = function(){
   var url = 'http://services.science.au.dk/apps/skema/VaelgElevskema.asp?webnavn=skema';
-  request.post(url, function (error, response, body) {
+  request.post(url, function (error, response) {
     if (!error && response.statusCode == 200) {
       auCookie = response.headers['set-cookie'][0].split(';')[0];
       console.log('Updated cookie');
@@ -86,25 +84,17 @@ var updateCookie = function(){
 };
 
 // Builder module
-var builder = (function () {
-
-  var res = {};
-  res.courses = [];
-  var studentName = '';
+var Builder = (function () {
 
   return{
-    init: function(studentId){
-      res.studentId = studentId;
-    },
-
-    getStudentId: function(){
-      return res.studentId;
-    },
-
     createJSONObjectFromHTML: function (htmlString) {
+      var res = {};
+      res.courses = [];
+      var studentName = '';
+      var type = '';
 
       //Get body for html
-      var body = htmlparser.parseDOM(htmlString)[2].children[3].children;
+      body = htmlparser.parseDOM(htmlString)[2].children[3].children;
 
       for (var i = 0; i < body.length; i++) {
         var courseName = '';
@@ -119,7 +109,12 @@ var builder = (function () {
           this.courseName = body[i].children[0].data;
         }
 
-        //Retrieve individual course data
+        //Retrieve the type of course
+        if(body[i].name === 'strong'){
+          this.type = body[i].children[0].data;
+        }
+
+        //Retrieve data for the individual course type
         if(body[i].name === 'table'){
           var tableRow = body[i].children;
 
@@ -127,11 +122,12 @@ var builder = (function () {
             var course = {};
             if (tableRow[k].name === 'tr') {
               course.courseName = this.courseName;
-              course.link = tableRow[k].children[0].children[0].attribs ? 'http://services.science.au.dk/apps/skema/' + tableRow[k].children[0].children[0].attribs.href : '';
-              course.day = tableRow[k].children[1].children[0] ? tableRow[k].children[1].children[0].data : '';
-              course.time = tableRow[k].children[2].children[0] ? tableRow[k].children[2].children[0].data.replace(/\s/g, '').trim() : '';
-              course.week = tableRow[k].children[4].children[0] ? tableRow[k].children[4].children[0].data.replace(/uge/g, '').trim() : '';
-              course.location = tableRow[k].children[5].children[0] ? tableRow[k].children[5].children[0].children[0].data : '';
+              course.type = this.type;
+              course.link = tableRow[k].children[0].children[0].attribs ? 'http://services.science.au.dk/apps/skema/' + tableRow[k].children[0].children[0].attribs.href : 'unknown';
+              course.day = tableRow[k].children[1].children[0] ? tableRow[k].children[1].children[0].data : 'unknown';
+              course.time = tableRow[k].children[2].children[0] ? tableRow[k].children[2].children[0].data.replace(/\s/g, '').trim() : 'unknown';
+              course.week = tableRow[k].children[4].children[0] ? tableRow[k].children[4].children[0].data.replace(/uge/g, '').trim() : 'unknown';
+              course.location = tableRow[k].children[5].children[0] ? tableRow[k].children[5].children[0].children[0].data : 'unknown';
             }
             //Pushing course to courses
             if(JSON.stringify(course) !== '{}'){
@@ -144,6 +140,11 @@ var builder = (function () {
         if(studentName !== ''){
           res.studentName = studentName;
         }
+      }
+
+      //Return an error if the student does not exist
+      if(res.studentName === undefined){
+        return {error: 'No student matching that student ID'};
       }
       return res;
     },
@@ -158,7 +159,6 @@ var builder = (function () {
       });
     }
   };
-
 })();
 
 //Update cookie once and then every 10 minutes
