@@ -1,10 +1,10 @@
 //Require various modules
 var request = require('request'),
-    http = require('http'),
-    url = require('url'),
-    htmlparser = require('htmlparser2'),
-    fs = require('fs'),
-    Iconv = require('iconv').Iconv;
+http = require('http'),
+url = require('url'),
+htmlparser = require('htmlparser2'),
+fs = require('fs'),
+Iconv = require('iconv').Iconv;
 
 var port = 8080;
 var aarskort;
@@ -37,15 +37,14 @@ http.createServer(function (req, res) {
       console.log('Something went wrong!');
     } else {
       res.writeHead(200, {'Content-Type' : 'application/json; charset=utf-8'});
-      //var responseObject = getScheduleObjectFromString(result);
-      //res.end(JSON.stringify(responseObject));
-      res.end(result);
+      var responseObject = builder.createJSONObjectFromHTML(result);
+      res.end(JSON.stringify(responseObject));
     }
   });
 
 }).listen(port);
 
-/* MODULES */
+/********** MODULES **********/
 
 //Request the schedule service at AU
 var getData = function(callback){
@@ -88,57 +87,71 @@ var updateCookie = function(){
   });
 };
 
-//Method to transform html to json
-var getScheduleObjectFromString = function (string){
-
-  var objectToReturn = {};
-  objectToReturn.courses = [];
-
-  //Get body for html
-  var body = htmlparser.parseDOM(string)[2].children[3].children;
-
-  for (var i = 0; i < body.length; i++) {
-    var courseName = "";
-    var week = "";
-
-
-    //Retrive the name of the student
-    if(body[i].name === 'h2'){
-      var data = body[i].children;
-      for (var j = 0; j < data.length; j++) {
-        if(data[j].type == 'text'){
-          objectToReturn.student = data[j].data.split("for")[1].trim();
-        }
-      }
-    }
-
-    //Retrieve the course titles
-    if(body[i].name === 'h3'){
-      objectToReturn.courses.push(body[i].children[0].data);
-    }
-
-    //Retrieve individual courses
-    if(body[i].name === 'table'){
-      var tableRows = body[i].children[0];
-
-      for (var k = 0; k < tableRows.length; k++) {
-        if (tableRows[k].name === 'tr') {
-          console.log('hurraaaa!');
-        }
-      }
-    }
-
-  }
-  return objectToReturn;
-};
-
-
 // Builder module
 var builder = (function () {
 
+  var res = {};
+  res.courses = [];
+
   return{
+    init: function(studentId){
+      res.studentId = studentId;
+    },
+
+    getStudentId: function(){
+      return res.studentId;
+    },
+
+    clear: function(){
+      res = {};
+    },
+
     createJSONObjectFromHTML: function (htmlString) {
 
+      //Get body for html
+      var body = htmlparser.parseDOM(htmlString)[2].children[3].children;
+
+      for (var i = 0; i < body.length; i++) {
+        //New course
+        var studentName = "";
+        var course = {};
+
+        //Retrive the name of the student
+        if(body[i].name === 'h2'){
+          var data = body[i].children;
+          for (var j = 0; j < data.length; j++) {
+            if(data[j].type == 'text'){
+              studentName = data[j].data.split("for")[1].trim();
+            }
+          }
+        }
+
+        //Retrieve the course title
+        if(body[i].name === 'h3'){
+          course.courseName = body[i].children[0].data;
+        }
+
+        //Retrieve individual course data
+        if(body[i].name === 'table'){
+          var tableRows = body[i].children[0];
+
+          for (var k = 0; k < tableRows.length; k++) {
+            if (tableRows[k].name === 'tr') {
+              console.log('hurraaaa!');
+            }
+          }
+        }
+
+        //Building the JSON object
+        if(JSON.stringify(course) !== '{}'){
+          res.courses.push(course);
+        }
+
+        if(studentName !== ''){
+          res.studentName = studentName;
+        }
+      }
+      return res;
     },
 
     buildResponseObject: function (){
