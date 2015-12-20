@@ -1,76 +1,86 @@
 {
-  "studentId" : 201205397,
-  "studentName": "Lasse Legaard",
-  "courses" : [
-    {
-      "courseName": "Pervasive Positioning",
-      "day": "Mandag",
-      "time": "11-12",
-      "week": "35-41",
-      "location": "5794-118 (Åbogade 40)"
+  "courses":
+  [
+    {"courseName":"Pervasive Positioning",
+      "type":"Forel�sninger",
+      "link":"http://services.science.au.dk/apps/skema/holdliste.asp?udbud=5298507&holdgruppe_da=F&hold=F",
+      "day":"Mandag",
+      "time":"11-12",
+      "week":"35-41",
+      "location":"5794-118 (�bogade 40)"
     },
-    {
-      "courseName" : "Pervasive Positioning",
-      "day": "Onsdag",
-      "time": "9-11",
-      "week": "36",
-      "location": "Lokale: bygning 1584, lokale 124 (Langelandsgade 139)"
+    {"courseName":"Pervasive Positioning",
+      "type":"Forel�sninger",
+      "link":"http://services.science.au.dk/apps/skema/holdliste.asp?udbud=5298507&holdgruppe_da=F&hold=F",
+      "day":"Onsdag",
+      "time":"9-11",
+      "week":"36",
+      "location":"Lokale: bygning 1584, lokale 124 (Langelandsgade 139)"
     },
-    {
-      "courseName": "Pervasive Positioning",
-      "day": "Onsdag",
-      "time": "9-11",
-      "week": "35, 37-41",
-      "location": "5794-118 (Åbogade 40)"
+    {"courseName":"Pervasive Positioning",
+      "type":"Forel�sninger",
+      "link":"http://services.science.au.dk/apps/skema/holdliste.asp?udbud=5298507&holdgruppe_da=F&hold=F",
+      "day":"Onsdag",
+      "time":"9-11",
+      "week":"35, 37-41",
+      "location":"5794-118 (�bogade 40)"
     },
-    {
-      "courseName": "Interaktive Rum",
-      "day": "Onsdag",
-      "time": "9-15",
-      "week": "35, 45-51",
-      "location": "ny192 (5335-192)"
+    {"courseName":"Interaktive Rum",
+      "type":"Forel�sninger",
+      "link":"http://services.science.au.dk/apps/skema/holdliste.asp?udbud=5298528&holdgruppe_da=F&hold=F",
+      "day":"Onsdag",
+      "time":"9-15",
+      "week":"45-51",
+      "location":"unknown"
     },
-    {
-      "courseName": "Kontekst bevidsthed",
-      "day": "Mandag",
-      "time": "11-12",
-      "week": "45-51",
-      "location": "5794-118 (Åbogade 40)"
+    {"courseName":"Kontekst bevidsthed",
+      "type":"Forel�sninger",
+      "link":"http://services.science.au.dk/apps/skema/holdliste.asp?udbud=5298533&holdgruppe_da=F&hold=F",
+      "day":"Mandag",
+      "time":"11-12",
+      "week":"45-51",
+      "location":"5794-118 (�bogade 40)"
     },
-    {
-      "courseName": "Kontekst bevidsthed",
-      "day": "Tirsdag",
-      "time": "14-16",
-      "week": "45-51",
-      "location": "Store Aud., IT-huset (5510-103)"
+    {"courseName":"Kontekst bevidsthed",
+      "type":"Forel�sninger",
+      "link":"http://services.science.au.dk/apps/skema/holdliste.asp?udbud=5298533&holdgruppe_da=F&hold=F",
+      "day":"Tirsdag",
+      "time":"14-16",
+      "week":"45-51",
+      "location":"unknown"
     },
-    {
-      "courseName": "Anvanceret Web Programmering",
-      "day": "Mandag",
-      "time": "14-17",
-      "week": "45-51",
-      "location": "Store Aud., IT-huset (5510-103)"
+    {"courseName":"Avanceret Web Programmering",
+      "type":"Forel�sninger",
+      "link":"http://services.science.au.dk/apps/skema/holdliste.asp?udbud=5298545&holdgruppe_da=F&hold=F",
+      "day":"Mandag",
+      "time":"14-17",
+      "week":"45-51",
+      "location":"unknown"
     },
-    {
-      "courseName": "Cloud Computing and Architecture",
-      "day": "Mandag",
-      "time": "14-17",
-      "week": "40",
-      "location": "Auditorium I (1514-213)"
+    {"courseName":"Cloud Computing and Architecture",
+      "type":"Forel�sninger",
+      "link":"http://services.science.au.dk/apps/skema/holdliste.asp?udbud=5333052&holdgruppe_da=F&hold=F",
+      "day":"Mandag",
+      "time":"14-17",
+      "week":"40",
+      "location":"unknown"
     },
-    {
-      "courseName": "Cloud Computing and Architecture",
-      "day": "Mandag",
-      "time": "14-17",
-      "week": "35-39, 41",
-      "location": "Store Aud., IT-huset (5510-103)"
+    {"courseName":"Cloud Computing and Architecture",
+      "type":"Forel�sninger",
+      "link":"http://services.science.au.dk/apps/skema/holdliste.asp?udbud=5333052&holdgruppe_da=F&hold=F",
+      "day":"Mandag",
+      "time":"14-17",
+      "week":"35-39, 41",
+      "location":"unknown"
     },
-    {
-      "courseName": "Shape Changing Interfaces",
-      "day": "Tirsdag",
-      "time": "9-15",
-      "week": "35-41",
-      "location": "Stibitz-123, Åbogade"
+    {"courseName":"Shape Changing Interfaces",
+      "type":"Forel�sninger",
+      "link":"http://services.science.au.dk/apps/skema/holdliste.asp?udbud=5333064&holdgruppe_da=F&hold=F",
+      "day":"Tirsdag",
+      "time":"9-15",
+      "week":"35-41",
+      "location":"unknown"
     }
-  ]
+  ],
+  "studentName":"Lasse Legaard"
 }
