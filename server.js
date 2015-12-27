@@ -4,6 +4,7 @@ http = require('http'),
 url = require('url'),
 htmlparser = require('htmlparser2'),
 fs = require('fs');
+Builder = require('./builder.js');
 
 var port = 8080;
 var aarskort;
@@ -82,84 +83,6 @@ var updateCookie = function(){
     }
   });
 };
-
-// Builder module
-var Builder = (function () {
-
-  return{
-    createJSONObjectFromHTML: function (htmlString) {
-      var res = {};
-      res.courses = [];
-      var studentName = '';
-      var type = '';
-
-      //Get body for html
-      body = htmlparser.parseDOM(htmlString)[2].children[3].children;
-
-      for (var i = 0; i < body.length; i++) {
-        var courseName = '';
-
-        //Retrive the name of the student
-        if(body[i].name === 'h2'){
-          studentName = body[i].children[0].data.split('for')[1].trim();
-        }
-
-        //Retrieve the course title
-        if(body[i].name === 'h3'){
-          this.courseName = body[i].children[0].data;
-        }
-
-        //Retrieve the type of course
-        if(body[i].name === 'strong'){
-          this.type = body[i].children[0].data;
-        }
-
-        //Retrieve data for the individual course type
-        if(body[i].name === 'table'){
-          var tableRow = body[i].children;
-
-          for (var k = 0; k < tableRow.length; k++) {
-            var course = {};
-            if (tableRow[k].name === 'tr') {
-              course.courseName = this.courseName;
-              course.type = this.type;
-              course.link = tableRow[k].children[0].children[0].attribs ? 'http://services.science.au.dk/apps/skema/' + tableRow[k].children[0].children[0].attribs.href : 'unknown';
-              course.day = tableRow[k].children[1].children[0] ? tableRow[k].children[1].children[0].data : 'unknown';
-              course.time = tableRow[k].children[2].children[0] ? tableRow[k].children[2].children[0].data.replace(/\s/g, '').trim() : 'unknown';
-              course.week = tableRow[k].children[4].children[0] ? tableRow[k].children[4].children[0].data.replace(/uge/g, '').trim() : 'unknown';
-              course.location = tableRow[k].children[5].children[0] ? tableRow[k].children[5].children[0].children[0].data : 'unknown';
-            }
-            //Pushing course to courses
-            if(JSON.stringify(course) !== '{}'){
-              res.courses.push(course);
-            }
-          }
-        }
-
-        //Adding student name
-        if(studentName !== ''){
-          res.studentName = studentName;
-        }
-      }
-
-      //Return an error if the student does not exist
-      if(res.studentName === undefined){
-        return {error: 'No student matching that student ID'};
-      }
-      return res;
-    },
-
-    getTestObject: function (callback){
-      fs.readFile("./201205397.json", "utf8", function(error, data){
-        if(error){
-          console.log('An error occured while reading the test file');
-        } else {
-          callback(data);
-        }
-      });
-    }
-  };
-})();
 
 //Update cookie once and then every 10 minutes
 updateCookie();
