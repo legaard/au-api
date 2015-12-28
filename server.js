@@ -2,22 +2,25 @@
 var request = require('request'),
 http = require('http'),
 url = require('url'),
-htmlparser = require('htmlparser2'),
-fs = require('fs');
+sanitizer = require('sanitize-html'),
 Builder = require('./builder.js');
 
 var port = 8080;
 var aarskort;
-var auCookie = "";
+var auCookie = '';
+var cookieUrl = 'http://services.science.au.dk/apps/skema/VaelgElevskema.asp?webnavn=skema';
+var dataUrl = 'http://services.science.au.dk/apps/skema/ElevSkema.asp';
 
 //Create a server
 http.createServer(function (req, res) {
 
-  //Get url param: aarskort
-  aarskort = url.parse(req.url, true).query.aarskort;
+  //Get url param 'aarskort' and the sanitze it
+  aarskort = sanitizer(url.parse(req.url, true).query.aarskort);
+
+  //Create a url param for pretty and for newest data, which comes from the AU server
 
   //Return an error if not 'aarkort' is provided
-  if(aarskort === undefined){
+  if(aarskort === undefined || aarskort === ''){
     res.writeHead(501, {'Content-Type' : 'text/plain'});
     res.end('Missing url param: aarskort');
   }
@@ -25,7 +28,7 @@ http.createServer(function (req, res) {
   //Respond with a fake data object
   if(aarskort === 'test'){
     res.writeHead(200, {'Content-Type' : 'application/json; charset=utf-8'});
-    var data = Builder.getTestObject(function(data){
+    var data = Builder.createTestResponseObject('201205397.json', function(data){
       res.end(data);
     });
   }
@@ -37,7 +40,7 @@ http.createServer(function (req, res) {
       console.log('Something went wrong!');
     } else {
       res.writeHead(200, {'Content-Type' : 'application/json; charset=utf-8'});
-      res.end(JSON.stringify(Builder.createJSONObjectFromHTML(result)));
+      res.end(JSON.stringify(Builder.createResponseObject(result)));
     }
   });
 
@@ -49,11 +52,10 @@ var getData = function(callback){
   //Creating a cookie and the url to use
   var j = request.jar();
   var cookie = request.cookie(auCookie);
-  var url = 'http://services.science.au.dk/apps/skema/ElevSkema.asp';
-  j.setCookie(cookie, url);
+  j.setCookie(cookie, dataUrl);
 
   var options = {
-    url: url,
+    url: dataUrl,
     jar: j,
     form: {'B1' : 'S%F8g', 'aarskort' : aarskort},
     headers: {
@@ -73,8 +75,7 @@ var getData = function(callback){
 
 //Function used to update the cookie
 var updateCookie = function(){
-  var url = 'http://services.science.au.dk/apps/skema/VaelgElevskema.asp?webnavn=skema';
-  request.post(url, function (error, response) {
+  request.post(cookieUrl, function (error, response) {
     if (!error && response.statusCode == 200) {
       auCookie = response.headers['set-cookie'][0].split(';')[0];
       console.log('Updated cookie');

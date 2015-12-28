@@ -2,14 +2,20 @@ var htmlparser = require('htmlparser2'),
 fs = require('fs');
 
 module.exports = {
-  createJSONObjectFromHTML: createJSONObjectFromHTML,
-  getTestObject: getTestObject
+  createResponseObject: createResponseObject,
+  createTestResponseObject: createTestResponseObject
 };
 
-function createJSONObjectFromHTML(htmlString) {
+function createResponseObject(htmlString) {
   var responseObject = {};
   responseObject.studentName = '';
   responseObject.courses = [];
+
+  if (htmlString) {
+    //See if something is wrong
+    console.log('Could not create response obect. htmlString was \'undefined\' or empty');
+    return;
+  }
 
   //Get body for html
   body = htmlparser.parseDOM(htmlString)[2].children[3].children;
@@ -33,12 +39,13 @@ function createJSONObjectFromHTML(htmlString) {
       this.type = body[i].children[0].data;
     }
 
-    //Retrieve data for the individual course type
+    //Retrieve data for the individual course
     if(body[i].name === 'table'){
       var tableRow = body[i].children;
 
       for (var k = 0; k < tableRow.length; k++) {
         var course = {};
+
         if (tableRow[k].name === 'tr') {
           course.courseName = this.courseName;
           course.type = this.type;
@@ -58,14 +65,15 @@ function createJSONObjectFromHTML(htmlString) {
 
   //Return an error if the student does not exist
   if(responseObject.studentName === ''){
-    return {error: 'no student matching that student ID'};
+    console.log('Could not create response object from string');
+    return {error: 'no student matching that student number'};
   }
 
   return responseObject;
 }
 
-function getTestObject(callback){
-  fs.readFile("./201205397.json", "utf8", function(error, data){
+function createTestResponseObject(fileName, callback){
+  fs.readFile('./' + fileName, 'utf8', function(error, data){
     if(error){
       console.log('An error occured while reading the test file');
     } else {
