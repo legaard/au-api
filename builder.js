@@ -11,9 +11,9 @@ function createResponseObject(htmlString) {
   responseObject.studentName = '';
   responseObject.courses = [];
 
-  if (htmlString) {
+  if (htmlString === undefined) {
     //See if something is wrong
-    console.log('Could not create response obect. htmlString was \'undefined\' or empty');
+    console.log('Could not create response object. htmlString was \'undefined\' or empty');
     return;
   }
 
@@ -65,7 +65,6 @@ function createResponseObject(htmlString) {
 
   //Return an error if the student does not exist
   if(responseObject.studentName === ''){
-    console.log('Could not create response object from string');
     return {error: 'no student matching that student number'};
   }
 

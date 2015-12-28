@@ -14,10 +14,13 @@ var dataUrl = 'http://services.science.au.dk/apps/skema/ElevSkema.asp';
 //Create a server
 http.createServer(function (req, res) {
 
-  //Get url param 'aarskort' and the sanitze it
-  aarskort = sanitizer(url.parse(req.url, true).query.aarskort);
+  //Get url params 'aarskort', 'newest' and the sanitze it
 
-  //Create a url param for pretty and for newest data, which comes from the AU server
+  //RENAME THE AARSKORT!!!
+
+  aarskort = sanitizer(url.parse(req.url, true).query.aarskort);
+  pretty = sanitizer(url.parse(req.url, true).query.pretty);
+  newest = sanitizer(url.parse(req.url, true).query.newest);
 
   //Return an error if not 'aarkort' is provided
   if(aarskort === undefined || aarskort === ''){
