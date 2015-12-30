@@ -37,7 +37,9 @@ http.createServer(function (req, res) {
       res.end('Server: An error occured while scraping the AU website!');
     } else {
       res.writeHead(200, {'Content-Type' : 'application/json; charset=utf-8'});
-      res.end(JSON.stringify(builder.createResponseObject(data)));
+      responseObject = builder.createResponseObject(data);
+      response = pretty === 'true' ? JSON.stringify(responseObject, null, 4) : JSON.stringify(responseObject);
+      res.end(response);
     }
   });
 
