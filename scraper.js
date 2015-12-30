@@ -1,5 +1,5 @@
 var request = require('request'),
-iconv = require('iconv');
+iconv = require('iconv-lite');
 
 // Variables used in this module
 var _cookieUrl = 'http://services.science.au.dk/apps/skema/VaelgElevskema.asp?webnavn=skema',
@@ -26,9 +26,8 @@ function getSceduleData(studentNumber, callback) {
   request.post(options, function (error, response, body) {
     if (!error && response.statusCode == 200) {
       //Converting the response from the server, to show the letters æøå correct
-      var ic = new iconv.Iconv('iso-8859-1', 'utf-8');
-      var buf = ic.convert(body);
-      var res = buf.toString('utf-8');
+      var output = iconv.decode(body, 'iso-8859-1');
+      var res = output.toString('utf-8');
 
       callback(null, res);
     } else {

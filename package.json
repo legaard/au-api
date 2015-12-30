@@ -10,7 +10,7 @@
   "license": "ISC",
   "devDependencies": {
     "htmlparser2": "^3.9.0",
-    "iconv": "^2.1.11",
+    "iconv-lite": "^0.4.13",
     "mongodb": "^2.1.2",
     "request": "^2.67.0",
     "sanitize-html": "^1.11.2"
