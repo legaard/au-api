@@ -14,7 +14,7 @@ function createResponseObject(htmlString) {
   }
 
   //Get body for html
-  body = htmlparser.parseDOM(htmlString)[2].children[3].children;
+  var body = htmlparser.parseDOM(htmlString)[2].children[3].children;
 
   for (var i = 0; i < body.length; i++) {
     var courseName = '';
