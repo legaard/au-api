@@ -1,19 +1,15 @@
 var htmlparser = require('htmlparser2'),
 fs = require('fs');
 
-module.exports = {
-  createResponseObject: createResponseObject,
-  createTestResponseObject: createTestResponseObject
-};
+var _className = 'BUILDER';
 
 function createResponseObject(htmlString) {
   var responseObject = {};
   responseObject.studentName = '';
   responseObject.courses = [];
 
-  if (htmlString === undefined) {
-    //See if something is wrong
-    console.log('Could not create response object. htmlString was \'undefined\' or empty');
+  if (htmlString === undefined || htmlString === '') {
+    console.log(_className + ': Could not create response object. htmlString was \'undefined\' or empty');
     return;
   }
 
@@ -74,9 +70,14 @@ function createResponseObject(htmlString) {
 function createTestResponseObject(fileName, callback){
   fs.readFile('./' + fileName, 'utf8', function(error, data){
     if(error){
-      console.log('An error occured while reading the test file');
+      console.log(_className + ': An error occured while reading the test file');
     } else {
       callback(data);
     }
   });
 }
+
+module.exports = {
+  createResponseObject: createResponseObject,
+  createTestResponseObject: createTestResponseObject
+};
