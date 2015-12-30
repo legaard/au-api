@@ -45,7 +45,7 @@ function createResponseObject(htmlString) {
         if (tableRow[k].name === 'tr') {
           course.courseName = this.courseName;
           course.type = this.type;
-          course.link = tableRow[k].children[0].children[0].attribs ? 'http://services.science.au.dk/apps/skema/' + tableRow[k].children[0].children[0].attribs.href : 'unknown';
+          course.participants = tableRow[k].children[0].children[0].attribs ? 'http://services.science.au.dk/apps/skema/' + tableRow[k].children[0].children[0].attribs.href : 'unknown';
           course.day = tableRow[k].children[1].children[0] ? tableRow[k].children[1].children[0].data : 'unknown';
           course.time = tableRow[k].children[2].children[0] ? tableRow[k].children[2].children[0].data.replace(/\s/g, '').trim() : 'unknown';
           course.week = tableRow[k].children[4].children[0] ? tableRow[k].children[4].children[0].data.replace(/uge/g, '').trim() : 'unknown';

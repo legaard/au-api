@@ -3,13 +3,12 @@ var http = require('http'),
 url = require('url'),
 sanitizer = require('sanitize-html'),
 builder = require('./builder'),
-scraper = require('./scraper'),
-dbhandler = require('./dbhandler');
+scraper = require('./scraper');
 
-//Variables to be used
-var port = 8080;
+//Variables to be used in this file
+var _port = 8080,
+_className = 'SERVER';
 
-//Create a server
 http.createServer(function (req, res) {
 
   //Get url params 'studentNumber', 'pretty' and 'newest'
@@ -20,13 +19,13 @@ http.createServer(function (req, res) {
   //Return an error if no 'studentNumber' is provided
   if(studentNumber === undefined || studentNumber === ''){
     res.writeHead(501, {'Content-Type' : 'text/plain'});
-    res.end('Server: The URL param \'studentNumber\' is missing or empty');
+    res.end(_className + ': The URL param \'studentNumber\' is empty or missing');
   }
 
-  //Respond with a fake data object
+  //Respond with a test object
   if(studentNumber === 'test'){
     res.writeHead(200, {'Content-Type' : 'application/json; charset=utf-8'});
-    var data = builder.createTestResponseObject('201205397.json', function(data){
+    builder.createTestResponseObject('201205397.json', function(data){
       res.end(data);
     });
   }
@@ -34,16 +33,16 @@ http.createServer(function (req, res) {
   scraper.getSceduleData(studentNumber, function(error, data){
     if(error){
       res.writeHead(501, {'Content-Type' : 'text/plain'});
-      res.end('Server: An error occured while scraping the AU website!');
+      res.end(_className + ': An error occured while scraping the AU website');
     } else {
       res.writeHead(200, {'Content-Type' : 'application/json; charset=utf-8'});
       responseObject = builder.createResponseObject(data);
-      response = pretty === 'true' ? JSON.stringify(responseObject, null, 4) : JSON.stringify(responseObject);
+      response = pretty === 'true' ? JSON.stringify(responseObject, null, 2) : JSON.stringify(responseObject);
       res.end(response);
     }
   });
 
-}).listen(port);
+}).listen(_port);
 
 //Update cookie once and then every 10 minutes
 scraper.updateCookie();

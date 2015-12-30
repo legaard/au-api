@@ -4,8 +4,8 @@ iconv = require('iconv');
 // Variables used in this module
 var _cookieUrl = 'http://services.science.au.dk/apps/skema/VaelgElevskema.asp?webnavn=skema',
 _dataUrl = 'http://services.science.au.dk/apps/skema/ElevSkema.asp',
-_auCookie = '',
-_className = 'SCRAPER';
+_className = 'SCRAPER',
+_auCookie = '';
 
 //Request data from the schedule service at AU
 function getSceduleData(studentNumber, callback) {
@@ -25,7 +25,7 @@ function getSceduleData(studentNumber, callback) {
 
   request.post(options, function (error, response, body) {
     if (!error && response.statusCode == 200) {
-      //Converting the response from the server
+      //Converting the response from the server, to show the letters æøå correct
       var ic = new iconv.Iconv('iso-8859-1', 'utf-8');
       var buf = ic.convert(body);
       var res = buf.toString('utf-8');
@@ -48,8 +48,6 @@ function updateCookie() {
     }
   });
 }
-
-//Translate encoding
 
 module.exports = {
   getSceduleData: getSceduleData,
