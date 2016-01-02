@@ -1,5 +1,6 @@
 var htmlparser = require('htmlparser2'),
-fs = require('fs');
+fs = require('fs'),
+util = require('./util');
 
 var _className = 'BUILDER';
 
@@ -8,8 +9,9 @@ function createResponseObject(htmlString) {
   responseObject.studentName = '';
   responseObject.courses = [];
 
+  //TODO: remove once the server validates the input
   if (htmlString === undefined || htmlString === '') {
-    console.log(_className + ': Could not create response object. htmlString was \'undefined\' or empty');
+    util.logStatement(_className, 'Could not create response object. htmlString was \'undefined\' or empty');
     return;
   }
 
@@ -32,7 +34,7 @@ function createResponseObject(htmlString) {
 
     //Retrieve the type of course
     if(body[i].name === 'strong'){
-      this.type = body[i].children[0].data;
+      this.type = _removeEndingOnCourseType(body[i].children[0].data);
     }
 
     //Retrieve data for the individual course
@@ -46,7 +48,7 @@ function createResponseObject(htmlString) {
           course.courseName = this.courseName;
           course.type = this.type;
           course.participants = tableRow[k].children[0].children[0].attribs ? 'http://services.science.au.dk/apps/skema/' + tableRow[k].children[0].children[0].attribs.href : 'unknown';
-          course.day = tableRow[k].children[1].children[0] ? tableRow[k].children[1].children[0].data : 'unknown';
+          course.day = tableRow[k].children[1].children[0] ? tableRow[k].children[1].children[0].data.toLowerCase() : 'unknown';
           course.time = tableRow[k].children[2].children[0] ? tableRow[k].children[2].children[0].data.replace(/\s/g, '').trim() : 'unknown';
           course.week = tableRow[k].children[4].children[0] ? tableRow[k].children[4].children[0].data.replace(/uge/g, '').trim() : 'unknown';
           course.location = tableRow[k].children[5].children[0] ? tableRow[k].children[5].children[0].children[0].data : 'unknown';
@@ -61,20 +63,41 @@ function createResponseObject(htmlString) {
 
   //Return an error if the student does not exist
   if(responseObject.studentName === ''){
+    util.logStatement(_className, 'No student match. Error object created');
     return {error: 'no student matching that student number'};
   }
 
+  util.logStatement(_className, 'Created response object');
   return responseObject;
 }
 
 function createTestResponseObject(fileName, callback){
   fs.readFile('./' + fileName, 'utf8', function(error, data){
     if(error){
-      console.log(_className + ': An error occured while reading the test file');
+      util.logStatement(_className, 'An error occured while reading the test file');
     } else {
       callback(data);
     }
   });
+}
+
+function _removeEndingOnCourseType(type) {
+  var trimmedType = '';
+
+  switch (type) {
+    case 'Forelæsninger':
+    trimmedType = 'forelæsning';
+    break;
+    case 'Teoretiske øvelser':
+    trimmedType = 'teoretisk øvelse';
+    break;
+    case 'Laboratorieøvelser':
+    trimmedType = 'laboratorieøvelse';
+    break;
+    default:
+    trimmedType = type;
+  }
+  return trimmedType;
 }
 
 module.exports = {
