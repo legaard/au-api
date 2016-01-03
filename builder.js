@@ -9,12 +9,6 @@ function createScheduleObject(htmlString) {
   responseObject.studentName = '';
   responseObject.courses = [];
 
-  //TODO: remove once the server validates the input
-  if (htmlString === undefined || htmlString === '') {
-    util.logError(_className, 'Could not create response object. htmlString was \'undefined\' or empty');
-    return;
-  }
-
   //Get body for html
   var body = htmlparser.parseDOM(htmlString)[2].children[3].children;
 
@@ -64,7 +58,7 @@ function createScheduleObject(htmlString) {
   //Return an error if the student does not exist
   if(responseObject.studentName === ''){
     util.logInfo(_className, 'No student match. Error object created');
-    return {error: 'no student matching that student number'};
+    return {error: 'No student matching that student number'};
   }
 
   util.logInfo(_className, 'Created response object');
@@ -73,10 +67,11 @@ function createScheduleObject(htmlString) {
 
 function createTestScheduleObject(fileName, callback){
   fs.readFile('./' + fileName, 'utf8', function(error, data){
-    if(error){
-      util.logError(_className, 'An error occured while reading the test file');
+    if(!error){
+      callback(null, data);
     } else {
-      callback(data);
+      callback(error);
+      util.logError(_className, 'An error occured while reading the test file');
     }
   });
 }
