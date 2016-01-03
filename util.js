@@ -1,8 +1,14 @@
-function logStatement(source, output){
-  console.log(source + '\t-->', output);
-  //TODO: Log output to a log file
+var logger = require('simple-node-logger').createSimpleLogger('server.log');
+
+function logInfo(source, output){
+  logger.info(source, ':\t', output);
+}
+
+function logError(source, output){
+  logger.error(source, ':\t', output);
 }
 
 module.exports = {
-  logStatement: logStatement
+  logInfo: logInfo,
+  logError: logError
 };

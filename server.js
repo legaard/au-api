@@ -21,7 +21,7 @@ http.createServer(function (req, res) {
   if(req.url === '/favicon.ico'){
     res.writeHead(200, {'Content-Type': 'image/x-icon'} );
     res.end();
-    util.logStatement(_className, 'Handlet the request for faveicon');
+    util.logInfo(_className, 'Handlet the request for faveicon');
     return;
   }
 
@@ -34,9 +34,9 @@ http.createServer(function (req, res) {
   //Respond with a test object
   if(studentNumber === 'test'){
     res.writeHead(200, {'Content-Type' : 'application/json; charset=utf-8'});
-    builder.createTestResponseObject('201205397.json', function(data){
+    builder.createTestScheduleObject('201205397.json', function(data){
       res.end(data);
-      util.logStatement(_className, 'Served information. Student: ' + studentNumber);
+      util.logInfo(_className, 'Served information. Student: ' + studentNumber);
     });
   }
 
@@ -46,19 +46,19 @@ http.createServer(function (req, res) {
       res.end(_className + ': An error occured while scraping the AU website');
     } else {
       res.writeHead(200, {'Content-Type' : 'application/json; charset=utf-8'});
-      responseObject = builder.createResponseObject(data);
+      responseObject = builder.createScheduleObject(data);
       response = _stringifyRespons(pretty, responseObject);
       res.end(response);
-      util.logStatement(_className, 'Served information. Student: ' + studentNumber);
+      util.logInfo(_className, 'Served information. Student: ' + studentNumber);
     }
   });
 
 }).listen(_port);
 
-//Log the ip and port which the server is running on
+//Log the ip and port that the server is running on
 network.get_public_ip(function(error, ip){
     if(!error){
-      util.logStatement(_className, 'Is running on ' + ip + ':' + _port);
+      util.logInfo(_className, 'Is running on ' + ip + ':' + _port);
     }
 });
 

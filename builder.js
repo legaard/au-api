@@ -4,14 +4,14 @@ util = require('./util');
 
 var _className = 'BUILDER';
 
-function createResponseObject(htmlString) {
+function createScheduleObject(htmlString) {
   var responseObject = {};
   responseObject.studentName = '';
   responseObject.courses = [];
 
   //TODO: remove once the server validates the input
   if (htmlString === undefined || htmlString === '') {
-    util.logStatement(_className, 'Could not create response object. htmlString was \'undefined\' or empty');
+    util.logError(_className, 'Could not create response object. htmlString was \'undefined\' or empty');
     return;
   }
 
@@ -63,18 +63,18 @@ function createResponseObject(htmlString) {
 
   //Return an error if the student does not exist
   if(responseObject.studentName === ''){
-    util.logStatement(_className, 'No student match. Error object created');
+    util.logInfo(_className, 'No student match. Error object created');
     return {error: 'no student matching that student number'};
   }
 
-  util.logStatement(_className, 'Created response object');
+  util.logInfo(_className, 'Created response object');
   return responseObject;
 }
 
-function createTestResponseObject(fileName, callback){
+function createTestScheduleObject(fileName, callback){
   fs.readFile('./' + fileName, 'utf8', function(error, data){
     if(error){
-      util.logStatement(_className, 'An error occured while reading the test file');
+      util.logError(_className, 'An error occured while reading the test file');
     } else {
       callback(data);
     }
@@ -94,6 +94,9 @@ function _removeEndingOnCourseType(type) {
     case 'Laboratorieøvelser':
     trimmedType = 'laboratorieøvelse';
     break;
+    case 'Øvelser':
+    trimmedType = 'øvelse';
+    break;
     default:
     trimmedType = type;
   }
@@ -101,6 +104,6 @@ function _removeEndingOnCourseType(type) {
 }
 
 module.exports = {
-  createResponseObject: createResponseObject,
-  createTestResponseObject: createTestResponseObject
+  createScheduleObject: createScheduleObject,
+  createTestScheduleObject: createTestScheduleObject
 };
