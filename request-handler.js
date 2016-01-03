@@ -1,7 +1,7 @@
 var url = require('url'),
 builder = require('./builder'),
 scraper = require('./scraper'),
-util = require('./util');
+logger = require('./logger');
 
 var _className = 'HANDLER';
 
@@ -44,7 +44,7 @@ function handleSchedule(request, response){
         responseObject = builder.createScheduleObject(data);
         res = _stringifyRespons(pretty, responseObject);
         response.end(res);
-        util.logInfo(_className, 'Served information. Student: ' + studentNumber);
+        logger.logInfo(_className, 'Served information. Student: ' + studentNumber);
       }
     });
   }
@@ -53,12 +53,12 @@ function handleSchedule(request, response){
 
 function handleExam(request, response) {
   response.end();
-  util.logInfo(_className, 'Not implemented the exam yet!');
+  logger.logInfo(_className, 'Not implemented the exam yet!');
 }
 
 function handleParticipants(request, response){
   response.end();
-  util.logInfo(_className, 'Not implemented the participants yet!');
+  logger.logInfo(_className, 'Not implemented the participants yet!');
 
 }
 
@@ -67,7 +67,7 @@ function handleParticipants(request, response){
 function _dirtyURLResponse(response) {
   response.writeHead(200, {'Content-Type' : 'application/json; charset=utf-8'});
   response.end(JSON.stringify({error: 'Dirty URL: Only alphanumeric characters are allowed'}));
-  util.logInfo(_className, 'Created a dirty URL response');
+  logger.logInfo(_className, 'Created a dirty URL response');
 }
 
 function _isURLParamsInvalid(param) {

@@ -2,7 +2,7 @@
 var http = require('http'),
 network = require('network'),
 url = require('url'),
-util = require('./util'),
+logger = require('./logger'),
 requestHandler = require('./request-handler');
 
 //Variables to be used in this file
@@ -16,27 +16,27 @@ http.createServer(function (req, res) {
   switch (path) {
     case '/':
     requestHandler.handleSchedule(req, res);
-    util.logInfo(_className, 'Handle request for schedule data');
+    logger.logInfo(_className, 'Handle request for schedule data');
     break;
     case '/schedule':
     requestHandler.handleSchedule(req, res);
-    util.logInfo(_className, 'Handle request for schedule data');
+    logger.logInfo(_className, 'Handle request for schedule data');
     break;
     case '/exam':
     requestHandler.handleExam(req, res);
-    util.logInfo(_className, 'Handle request for exam data');
+    logger.logInfo(_className, 'Handle request for exam data');
     break;
     case '/participants':
     requestHandler.handleParticipants(req, res);
-    util.logInfo(_className, 'Handle request for data about participants');
+    logger.logInfo(_className, 'Handle request for data about participants');
     break;
     case '/favicon.ico':
     requestHandler.handleFaveicon(req, res);
-    util.logInfo(_className, 'Handle request for favicon');
+    logger.logInfo(_className, 'Handle request for favicon');
     break;
     default:
     res.end();
-    util.logInfo(_className, 'Handle request for undefined path');
+    logger.logInfo(_className, 'Handle request for undefined path');
   }
 
 }).listen(_port);
@@ -44,8 +44,8 @@ http.createServer(function (req, res) {
 //Log the ip and port that the server is running on
 network.get_public_ip(function(error, ip){
   if(!error){
-    util.logInfo(_className, 'Is running on ' + ip + ':' + _port);
+    logger.logInfo(_className, 'Is running on ' + ip + ':' + _port);
   } else{
-    util.logError(_className, 'Could not retrieve ip address');
+    logger.logError(_className, 'Could not retrieve ip address');
   }
 });

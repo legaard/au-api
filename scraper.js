@@ -1,12 +1,12 @@
 var request = require('request'),
 iconv = require('iconv-lite'),
-util = require('./util');
+logger = require('./logger');
 
 // Variables used in this module
 var _cookieUrl = 'http://services.science.au.dk/apps/skema/VaelgElevskema.asp?webnavn=skema',
 _dataUrl = 'http://services.science.au.dk/apps/skema/ElevSkema.asp',
-_className = 'SCRAPER',
-_auCookie = '';
+_auCookie = '',
+_className = 'SCRAPER';
 
 //Request data from the schedule service at AU
 function getSceduleData(studentNumber, callback) {
@@ -30,10 +30,10 @@ function getSceduleData(studentNumber, callback) {
       var output = iconv.decode(body, 'iso-8859-1');
       var res = output.toString('utf-8');
 
-      util.logInfo(_className, 'Succesfully scraped the AU website');
+      logger.logInfo(_className, 'Succesfully scraped the AU website');
       callback(null, res);
     } else {
-      util.logError(_className, 'An error occured while scraping');
+      logger.logError(_className, 'An error occured while scraping');
       callback(error);
     }
   });
@@ -44,9 +44,9 @@ function updateCookie() {
   request.post(_cookieUrl, function (error, response) {
     if (!error && response.statusCode == 200) {
       _auCookie = response.headers['set-cookie'][0].split(';')[0];
-      util.logInfo(_className,'Updated cookie');
+      logger.logInfo(_className,'Updated cookie');
     } else {
-      util.logError(_className, 'Could not retrieve cookie');
+      logger.logError(_className, 'Could not retrieve cookie');
     }
   });
 }

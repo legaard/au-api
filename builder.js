@@ -1,6 +1,6 @@
 var htmlparser = require('htmlparser2'),
 fs = require('fs'),
-util = require('./util');
+logger = require('./logger');
 
 var _className = 'BUILDER';
 
@@ -57,22 +57,22 @@ function createScheduleObject(htmlString) {
 
   //Return an error if the student does not exist
   if(responseObject.studentName === ''){
-    util.logInfo(_className, 'No student match. Error object created');
+    logger.logInfo(_className, 'No student match. Error object created');
     return {error: 'No student matching that student number'};
   }
 
-  util.logInfo(_className, 'Created response object');
+  logger.logInfo(_className, 'Created response object');
   return responseObject;
 }
 
 function createTestScheduleObject(fileName, callback){
   fs.readFile('./' + fileName, 'utf8', function(error, data){
     if(!error){
-      util.logInfo(_className, 'Successfully read the file for the test object');
+      logger.logInfo(_className, 'Successfully read the file for the test object');
       callback(null, data);
     } else {
       callback(error);
-      util.logError(_className, 'An error occured while reading the test file');
+      logger.logError(_className, 'An error occured while reading the test file');
     }
   });
 }
