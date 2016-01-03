@@ -52,10 +52,13 @@ function handleSchedule(request, response){
 }
 
 function handleExam(request, response) {
-
+  response.end();
+  util.logInfo(_className, 'Not implemented the exam yet!');
 }
 
 function handleParticipants(request, response){
+  response.end();
+  util.logInfo(_className, 'Not implemented the participants yet!');
 
 }
 

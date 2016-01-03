@@ -68,6 +68,7 @@ function createScheduleObject(htmlString) {
 function createTestScheduleObject(fileName, callback){
   fs.readFile('./' + fileName, 'utf8', function(error, data){
     if(!error){
+      util.logInfo(_className, 'Successfully read the file for the test object');
       callback(null, data);
     } else {
       callback(error);
