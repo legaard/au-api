@@ -24,10 +24,7 @@ function createScheduleObject(htmlString) {
     course.courseName = $(this).siblings('h3').eq(i).text();
     course.type = $(this).siblings('strong').eq(i).text();
 
-    var tableRows = $(this).children('tbody').children;
-
-    console.log(tableRows);
-
+    console.log("LOLOLOLO!");
   });
 
   /*var responseObject = {};
