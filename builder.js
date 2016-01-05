@@ -13,19 +13,33 @@ function createScheduleObject(htmlString) {
   var responseObject = {};
   responseObject.courses = [];
 
-  var $ = cheerio.load(htmlString, {
-    normalizeWhitespace: true
-  });
+  var $ = cheerio.load(htmlString);
+  var $body = $('body');
 
-  responseObject.studentName = $('body h2').text().split('for')[1].trim();
+  responseObject.studentName = $('h2', $body).text().split('for')[1].trim();
 
-  $('body table').each(function(i, element){
+  $('table', $body).each(function (i, element) {
     var course = {};
-    course.courseName = $(this).siblings('h3').eq(i).text();
-    course.type = $(this).siblings('strong').eq(i).text();
+    var courseName = $(this).siblings('h3').eq(i).text();
+    var type = $(this).siblings('strong').eq(i).text();
 
-    console.log("LOLOLOLO!");
+    var tr = $(this).children();
+
+    for (var r = 0; r < tr.length; r++) {
+      course.courseName = courseName;
+      course.type = type;
+      course.class = $('td', $(tr[r])).eq(0).children().eq(0).attr('href');
+      course.day = $('td', $(tr[r])).eq(1).text();
+      course.time = $('td', $(tr[r])).eq(2).text();
+      course.location = $('td', $(tr[r])).eq(3).text();
+      course.week = $('td', $(tr[r])).eq(4).text();
+      course.note = $('td', $(tr[r])).eq(5).children().eq(0).text();
+      responseObject.courses.push(course);
+    }
+
   });
+
+  console.log(responseObject);
 
   /*var responseObject = {};
   responseObject.studentName = '';
