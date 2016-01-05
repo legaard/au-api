@@ -83,9 +83,13 @@ function _stringifyRespons(shouldBePretty, object){
   }
 }
 
+function _encodeURLWindows1252(urlToEncode){
+
+}
+
 //Update cookie once and then every 10 minutes
 scraper.updateCookie();
-setInterval(scraper.updateCookie, 600000);
+setInterval(scraper.updateCookie, 1200000);
 
 module.exports = {
   handleFaveicon: handleFaveicon,

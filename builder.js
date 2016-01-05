@@ -1,8 +1,12 @@
 var htmlparser = require('htmlparser2'),
 fs = require('fs'),
+url = require('url'),
+iconv = require('iconv-lite'),
 logger = require('./logger');
 
 var _className = 'BUILDER';
+
+// 'http://services.science.au.dk/apps/skema/holdliste.asp?udbud=5298507&holdgruppe_da=F&hold=F'
 
 function createScheduleObject(htmlString) {
   var responseObject = {};
@@ -41,7 +45,7 @@ function createScheduleObject(htmlString) {
         if (tableRow[k].name === 'tr') {
           course.courseName = this.courseName;
           course.type = this.type;
-          course.participants = tableRow[k].children[0].children[0].attribs ? 'http://services.science.au.dk/apps/skema/' + tableRow[k].children[0].children[0].attribs.href : 'unknown';
+          course.class = tableRow[k].children[0].children[0].attribs ?  _transformURLToObject(tableRow[k].children[0].children[0].attribs.href) : 'unknown';
           course.day = tableRow[k].children[1].children[0] ? tableRow[k].children[1].children[0].data.toLowerCase() : 'unknown';
           course.time = tableRow[k].children[2].children[0] ? tableRow[k].children[2].children[0].data.replace(/\s/g, '').trim() : 'unknown';
           course.week = tableRow[k].children[4].children[0] ? tableRow[k].children[4].children[0].data.replace(/uge/g, '').trim() : 'unknown';
@@ -64,6 +68,8 @@ function createScheduleObject(htmlString) {
   logger.logInfo(_className, 'Created response object');
   return responseObject;
 }
+
+/* HELPER METHODS RELATED TO THE SCHEDULE */
 
 function createTestScheduleObject(fileName, callback){
   fs.readFile('./' + fileName, 'utf8', function(error, data){
@@ -97,6 +103,17 @@ function _removeEndingOnCourseType(type) {
     trimmedType = type;
   }
   return trimmedType;
+}
+
+function _transformURLToObject(urlToTransform){
+  var obj = {};
+  var query = url.parse(urlToTransform, true).query;
+
+  obj.classId = query.udbud;
+  obj.classNumber = query.holdgruppe_da;
+  obj.group = query.hold;
+
+  return obj;
 }
 
 module.exports = {
