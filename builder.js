@@ -2,6 +2,7 @@ var htmlparser = require('htmlparser2'),
 fs = require('fs'),
 url = require('url'),
 iconv = require('iconv-lite'),
+cheerio = require('cheerio'),
 logger = require('./logger');
 
 var _className = 'BUILDER';
@@ -10,6 +11,26 @@ var _className = 'BUILDER';
 
 function createScheduleObject(htmlString) {
   var responseObject = {};
+  responseObject.courses = [];
+
+  var $ = cheerio.load(htmlString, {
+    normalizeWhitespace: true
+  });
+
+  responseObject.studentName = $('body h2').text().split('for')[1].trim();
+
+  $('body table').each(function(i, element){
+    var course = {};
+    course.courseName = $(this).siblings('h3').eq(i).text();
+    course.type = $(this).siblings('strong').eq(i).text();
+
+    var tableRows = $(this).children('tbody').children;
+
+    console.log(tableRows);
+
+  });
+
+  /*var responseObject = {};
   responseObject.studentName = '';
   responseObject.courses = [];
 
@@ -66,7 +87,7 @@ function createScheduleObject(htmlString) {
   }
 
   logger.logInfo(_className, 'Created response object');
-  return responseObject;
+  return responseObject;*/
 }
 
 /* HELPER METHODS RELATED TO THE SCHEDULE */
