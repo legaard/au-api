@@ -1,7 +1,7 @@
 var url = require('url'),
-builder = require('./builder'),
-scraper = require('./scraper'),
-logger = require('./logger');
+    builder = require('./builder'),
+    scraper = require('./scraper'),
+    logger = require('./logger');
 
 var _className = 'HANDLER';
 

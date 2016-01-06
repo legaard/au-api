@@ -1,6 +1,6 @@
 var request = require('request'),
-iconv = require('iconv-lite'),
-logger = require('./logger');
+    iconv = require('iconv-lite'),
+    logger = require('./logger');
 
 // Variables used in this module
 var _cookieUrl = 'http://services.science.au.dk/apps/skema/VaelgElevskema.asp?webnavn=skema',

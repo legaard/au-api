@@ -1,7 +1,7 @@
 var cheerio = require('cheerio'),
-fs = require('fs'),
-url = require('url'),
-logger = require('./logger');
+    fs = require('fs'),
+    url = require('url'),
+    logger = require('./logger');
 
 var _className = 'BUILDER';
 
@@ -12,7 +12,7 @@ function createScheduleObject(htmlString) {
   //Creating the build object
   var build = {};
   var $ = cheerio.load(htmlString);
-  var $body = $('body');
+  var $body = $('body ');
 
   //Retrieving the student name (if it exist)
   build.studentName = $('h2', $body).text().indexOf('for') > -1 ? $('h2', $body).text().split('for')[1].trim() : '';
