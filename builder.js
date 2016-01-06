@@ -1,8 +1,6 @@
-var htmlparser = require('htmlparser2'),
+var cheerio = require('cheerio'),
 fs = require('fs'),
 url = require('url'),
-iconv = require('iconv-lite'),
-cheerio = require('cheerio'),
 logger = require('./logger');
 
 var _className = 'BUILDER';
@@ -10,36 +8,52 @@ var _className = 'BUILDER';
 // 'http://services.science.au.dk/apps/skema/holdliste.asp?udbud=5298507&holdgruppe_da=F&hold=F'
 
 function createScheduleObject(htmlString) {
-  var responseObject = {};
-  responseObject.courses = [];
 
+  //Creating the build object
+  var build = {};
   var $ = cheerio.load(htmlString);
   var $body = $('body');
 
-  responseObject.studentName = $('h2', $body).text().split('for')[1].trim();
+  //Retrieving the student name (if it exist)
+  build.studentName = $('h2', $body).text().indexOf('for') > -1 ? $('h2', $body).text().split('for')[1].trim() : '';
 
+  //Creating an array of courses
+  build.courses = [];
+
+  //Looping over the tables
   $('table', $body).each(function (i, element) {
-    var course = {};
-    var courseName = $(this).siblings('h3').eq(i).text();
-    var type = $(this).siblings('strong').eq(i).text();
 
+    var courseName = $(this).prevAll('h3').first().text();
+    var type = $(this).prevAll('strong').first().text();
     var tr = $(this).children();
 
-    for (var r = 0; r < tr.length; r++) {
-      course.courseName = courseName;
-      course.type = type;
-      course.class = $('td', $(tr[r])).eq(0).children().eq(0).attr('href');
-      course.day = $('td', $(tr[r])).eq(1).text();
-      course.time = $('td', $(tr[r])).eq(2).text();
-      course.location = $('td', $(tr[r])).eq(3).text();
-      course.week = $('td', $(tr[r])).eq(4).text();
-      course.note = $('td', $(tr[r])).eq(5).children().eq(0).text();
-      responseObject.courses.push(course);
-    }
+    //Looping over the tablerows
+    for (var k = 0; k < tr.length; k++) {
+      var course = {};
 
+      //Adding properties to the course object
+      course.courseName = courseName;
+      course.type = _removeEndingOnCourseType(type);
+      course.class = _transformURLToObject($('td', $(tr[k])).eq(0).children().eq(0).attr('href'));
+      course.day = $('td', $(tr[k])).eq(1).text().toLowerCase();
+      course.time = $('td', $(tr[k])).eq(2).text().replace(/\s/g, '').trim();
+      course.location = $('td', $(tr[k])).eq(3).text().trim();
+      course.week = $('td', $(tr[k])).eq(4).text().replace(/uge/g, '').trim();
+      course.note = $('td', $(tr[k])).eq(5).children().eq(0).text().trim();
+
+      //Adding the newly created course object to the array of courses in the respose object
+      build.courses.push(course);
+    }
   });
 
-  console.log(responseObject);
+  //Return an error if no student has the student number
+  if(build.studentName === ''){
+    logger.logInfo(_className, 'No student match. Error object created');
+    return {error: 'No student matching that student number'};
+  }
+
+  logger.logInfo(_className, 'Created response object');
+  return build;
 
   /*var responseObject = {};
   responseObject.studentName = '';
@@ -142,7 +156,7 @@ function _transformURLToObject(urlToTransform){
   var query = url.parse(urlToTransform, true).query;
 
   obj.classId = query.udbud;
-  obj.classNumber = query.holdgruppe_da;
+  obj.classGroup = query.holdgruppe_da;
   obj.group = query.hold;
 
   return obj;
