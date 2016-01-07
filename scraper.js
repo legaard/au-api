@@ -4,9 +4,9 @@ var request = require('request'),
 
 // Variables used in this module
 var _cookieUrl = 'http://services.science.au.dk/apps/skema/VaelgElevskema.asp?webnavn=skema',
-_dataUrl = 'http://services.science.au.dk/apps/skema/ElevSkema.asp',
-_auCookie = '',
-_className = 'SCRAPER';
+    _scheduleUrl = 'http://services.science.au.dk/apps/skema/ElevSkema.asp',
+    _auCookie = '',
+    _className = 'SCRAPER';
 
 //Request data from the schedule service at AU
 function getSceduleData(studentNumber, callback) {
@@ -14,11 +14,11 @@ function getSceduleData(studentNumber, callback) {
   //Creating a cookie and setting the URL to use
   var j = request.jar();
   var cookie = request.cookie(_auCookie);
-  j.setCookie(cookie, _dataUrl);
+  j.setCookie(cookie, _scheduleUrl);
 
   //Setting the options for the request
   var options = {
-    url: _dataUrl,
+    url: _scheduleUrl,
     encoding: null,
     jar: j,
     form: {'B1': 'S%F8g', 'aarskort': studentNumber},
