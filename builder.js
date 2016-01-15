@@ -5,8 +5,6 @@ var cheerio = require('cheerio'),
 
 var _className = 'BUILDER';
 
-// 'http://services.science.au.dk/apps/skema/holdliste.asp?udbud=5298507&holdgruppe_da=F&hold=F'
-
 function createScheduleObject(htmlString) {
 
   //Creating the cheerio and build object

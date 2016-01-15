@@ -5,8 +5,6 @@ var url = require('url'),
 
 var _className = 'HANDLER';
 
-/* METHODS AVAILBLE THROUGH THE MODULE */
-
 function handleFaveicon(request, response){
   response.writeHead(200, {'Content-Type': 'image/x-icon'});
   response.end();
@@ -52,8 +50,25 @@ function handleSchedule(request, response){
 }
 
 function handleExam(request, response) {
-  response.end();
-  logger.logInfo(_className, 'Not implemented the exam yet!');
+  var studentNumber = url.parse(request.url, true).query.aarskort;
+  var quarter = url.parse(request.url, true).query.quarter;
+  var pretty = url.parse(request.url, true).query.pretty;
+
+  if(_isURLParamsInvalid(studentNumber) || _isURLParamsInvalid(quarter)){
+    _dirtyURLResponse(response);
+    return;
+  }
+
+  scraper.getExamData(studentNumber, quarter, function(error, data){
+    if(error){
+      response.writeHead(501, {'Content-Type': 'text/plain'});
+      response.end(_className + ': An error occured while scraping the AU website');
+    } else {
+      response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+      response.end(data);
+      logger.logInfo(_className, 'Served information. Student: ' + studentNumber);
+    }
+  });
 }
 
 function handleParticipants(request, response){
@@ -86,10 +101,6 @@ function _stringifyRespons(shouldBePretty, object){
 function _encodeURLWindows1252(urlToEncode){
 
 }
-
-//Update cookie once and then every 10 minutes
-scraper.updateCookie();
-setInterval(scraper.updateCookie, 1200000);
 
 module.exports = {
   handleFaveicon: handleFaveicon,

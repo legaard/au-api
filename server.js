@@ -1,13 +1,13 @@
 //Require various modules
 var http = require('http'),
-network = require('network'),
-url = require('url'),
-logger = require('./logger'),
-requestHandler = require('./request-handler');
+    network = require('network'),
+    url = require('url'),
+    logger = require('./logger'),
+    requestHandler = require('./request-handler');
 
 //Variables to be used in this file
 var _port = 8080,
-_className = 'SERVER';
+    _className = 'SERVER';
 
 http.createServer(function (req, res) {
 

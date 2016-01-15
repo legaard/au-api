@@ -1,57 +1,104 @@
 var request = require('request'),
     iconv = require('iconv-lite'),
+    Q = require('q'),
     logger = require('./logger');
 
 // Variables used in this module
-var _cookieUrl = 'http://services.science.au.dk/apps/skema/VaelgElevskema.asp?webnavn=skema',
-    _scheduleUrl = 'http://services.science.au.dk/apps/skema/ElevSkema.asp',
-    _auCookie = '',
-    _className = 'SCRAPER';
+var _examAndScheduleUrl = 'http://services.science.au.dk/apps/skema/ElevSkema.asp',
+    _examSessionUrl = 'http://services.science.au.dk/apps/skema/VaelgelevSkema.asp?webnavn=EKSAMEN',
+    _scheduleSessionUrl = 'http://services.science.au.dk/apps/skema/VaelgelevSkema.asp?webnavn=skema',
+    _className = 'SCRAPER',
+     j = request.jar();
 
 //Request data from the schedule service at AU
 function getSceduleData(studentNumber, callback) {
 
-  //Creating a cookie and setting the URL to use
-  var j = request.jar();
-  var cookie = request.cookie(_auCookie);
-  j.setCookie(cookie, _scheduleUrl);
-
   //Setting the options for the request
   var options = {
-    url: _scheduleUrl,
+    url: _examAndScheduleUrl,
     encoding: null,
     jar: j,
     form: {'B1': 'S%F8g', 'aarskort': studentNumber},
   };
 
-  request.post(options, function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      //Converting the response from the server, to show the letters æøå correct
-      var output = iconv.decode(body, 'iso-8859-1');
-      var res = output.toString('utf-8');
-
-      logger.logInfo(_className, 'Succesfully scraped the AU website');
-      callback(null, res);
-    } else {
-      logger.logError(_className, 'An error occured while scraping');
-      callback(error);
-    }
+  //Update session and set url
+  _updateCookieAndSession(_scheduleSessionUrl).
+  then(function(){
+    request.post(options, function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+        //Converting the response from the server, to show the letters æøå correct
+        var res = _decode(body);
+        logger.logInfo(_className, 'Succesfully scraped the schedule website');
+        callback(null, res);
+      } else {
+        logger.logError(_className, 'An error occured while scraping');
+        callback(error);
+      }
+    });
   });
 }
 
+function getExamData(studentNumber, quarter, callback){
+
+  var options = {
+    url: _examAndScheduleUrl,
+    encoding: null,
+    jar: j,
+    form: {'B1': 'S%F8g', 'aarskort': studentNumber},
+  };
+
+  //Update the cookie and set the session to exam
+  _updateCookieAndSession(_examSessionUrl + quarter + '&sprog=da')
+  .then(function(){
+    request.post(options, function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+        //Converting the response from the server, to show the letters æøå correct
+        var res = _decode(body);
+        logger.logInfo(_className, 'Succesfully scraped the exam website');
+        callback(null, res);
+      } else {
+        logger.logError(_className, 'An error occured while scraping');
+        callback(error);
+      }
+    });
+  });
+
+
+}
+
 //Function used to update the cookie
-function updateCookie() {
-  request.post(_cookieUrl, function (error, response) {
+function _updateCookieAndSession(url) {
+
+  var deferred = Q.defer();
+
+  request.post(url, function (error, response) {
     if (!error && response.statusCode == 200) {
-      _auCookie = response.headers['set-cookie'][0].split(';')[0];
+      logger.logInfo(_className, 'Session set to:' + url);
+
+      var cookieString = response.headers['set-cookie'][0].split(';')[0];
+      var cookie = request.cookie(cookieString);
+      j.setCookie(cookie, 'http://services.science.au.dk/apps/skema/');
       logger.logInfo(_className,'Updated cookie');
+
+      deferred.resolve();
+
     } else {
-      logger.logError(_className, 'Could not retrieve cookie');
+
+      deferred.reject();
+      logger.logError(_className, 'Could not retrieve cookie and set session');
     }
   });
+
+  return deferred.promise;
+}
+
+//Decoding function: turns iso-8859-1 into utf-8
+function _decode(data){
+  var buffer = iconv.decode(data, 'iso-8859-1');
+  return buffer.toString('utf-8');
 }
 
 module.exports = {
   getSceduleData: getSceduleData,
-  updateCookie: updateCookie
+  getExamData: getExamData
 };
