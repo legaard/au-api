@@ -1,4 +1,7 @@
-var logger = require('simple-node-logger').createSimpleLogger('server.log');
+var logger = require('simple-node-logger').createSimpleLogger({
+	logFilePath:'server.log',
+	timestampFormat:'YYYY-MM-DD HH:mm:ss'
+});
 
 function logInfo(source, output){
   logger.info(source, '\t==>\t', output);

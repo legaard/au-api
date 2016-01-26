@@ -5,11 +5,6 @@ var url = require('url'),
 
 var _className = 'HANDLER';
 
-function handleFaveicon(request, response){
-  response.writeHead(200, {'Content-Type': 'image/x-icon'});
-  response.end();
-}
-
 function handleRoot(request, response){
   var res = builder.createIndexResponse()
   .then(function(data){
@@ -20,7 +15,6 @@ function handleRoot(request, response){
     response.writeHead(501, {'Content-Type': 'text/plan'});
     response.end(_className + ': Could not read index.html');
   });
-
 }
 
 function handleSchedule(request, response){
@@ -102,7 +96,6 @@ function _encodeURLWindows1252(urlToEncode){
 }
 
 module.exports = {
-  handleFaveicon: handleFaveicon,
   handleRoot: handleRoot,
   handleSchedule: handleSchedule,
   handleExam: handleExam,

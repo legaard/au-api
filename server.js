@@ -30,13 +30,9 @@ http.createServer(function (req, res) {
     requestHandler.handleParticipants(req, res);
     logger.logInfo(_className, 'Handled request for data about participants');
     break;
-    case '/favicon.ico':
-    requestHandler.handleFaveicon(req, res);
-    logger.logInfo(_className, 'Handled request for favicon');
-    break;
     default:
     res.end();
-    logger.logInfo(_className, 'Handled request for undefined path');
+    logger.logInfo(_className, 'Handled request for undefined path: ' + path);
   }
 
 }).listen(_port);
