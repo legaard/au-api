@@ -15,28 +15,28 @@ http.createServer(function (req, res) {
 
   switch (path) {
     case '/':
-    requestHandler.handleSchedule(req, res);
-    logger.logInfo(_className, 'Handle request for schedule data');
+    requestHandler.handleRoot(req, res);
+    logger.logInfo(_className, 'Handled request for the root');
     break;
     case '/schedule':
     requestHandler.handleSchedule(req, res);
-    logger.logInfo(_className, 'Handle request for schedule data');
+    logger.logInfo(_className, 'Handled request for schedule data');
     break;
     case '/exam':
     requestHandler.handleExam(req, res);
-    logger.logInfo(_className, 'Handle request for exam data');
+    logger.logInfo(_className, 'Handled request for exam data');
     break;
     case '/participants':
     requestHandler.handleParticipants(req, res);
-    logger.logInfo(_className, 'Handle request for data about participants');
+    logger.logInfo(_className, 'Handled request for data about participants');
     break;
     case '/favicon.ico':
     requestHandler.handleFaveicon(req, res);
-    logger.logInfo(_className, 'Handle request for favicon');
+    logger.logInfo(_className, 'Handled request for favicon');
     break;
     default:
     res.end();
-    logger.logInfo(_className, 'Handle request for undefined path');
+    logger.logInfo(_className, 'Handled request for undefined path');
   }
 
 }).listen(_port);

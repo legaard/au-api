@@ -10,64 +10,63 @@ function handleFaveicon(request, response){
   response.end();
 }
 
-function handleSchedule(request, response){
-  var studentNumber = url.parse(request.url, true).query.aarskort;
-  var pretty = url.parse(request.url, true).query.pretty;
-
-  if(_isURLParamsInvalid(studentNumber)){
-    _dirtyURLResponse(response);
-    return;
-  }
-
-  if(studentNumber === 'test'){
-
-    builder.createTestScheduleObject('201205397.json', function(error, data){
-      if(error){
-        response.writeHead(501, {'Content-Type' : 'text/plain'});
-        response.end(_className + ': Could not create test object');
-      } else {
-        response.writeHead(200, {'Content-Type' : 'application/json; charset=utf-8'});
-        response.end(data);
-      }
-    });
-
-  } else {
-
-    scraper.getSceduleData(studentNumber, function(error, data){
-      if(error){
-        response.writeHead(501, {'Content-Type': 'text/plain'});
-        response.end(_className + ': An error occured while scraping the AU website');
-      } else {
-        response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
-        responseObject = builder.createScheduleObject(data);
-        res = _stringifyRespons(pretty, responseObject);
-        response.end(res);
-        logger.logInfo(_className, 'Served information. Student: ' + studentNumber);
-      }
-    });
-  }
+function handleRoot(request, response){
+  var res = builder.createIndexResponse()
+  .then(function(data){
+    response.writeHead(200, {'Content-Type': 'text/html'});
+    response.end(data);
+  })
+  .catch(function(){
+    response.writeHead(501, {'Content-Type': 'text/plan'});
+    response.end(_className + ': Could not read index.html');
+  });
 
 }
 
-function handleExam(request, response) {
-  var studentNumber = url.parse(request.url, true).query.aarskort;
-  var quarter = url.parse(request.url, true).query.quarter;
+function handleSchedule(request, response){
+  var studentID = url.parse(request.url, true).query.studentID;
   var pretty = url.parse(request.url, true).query.pretty;
 
-  if(_isURLParamsInvalid(studentNumber) || _isURLParamsInvalid(quarter)){
+  if(_isURLParamsInvalid(studentID)){
     _dirtyURLResponse(response);
     return;
   }
 
-  scraper.getExamData(studentNumber, quarter, function(error, data){
-    if(error){
-      response.writeHead(501, {'Content-Type': 'text/plain'});
-      response.end(_className + ': An error occured while scraping the AU website');
-    } else {
-      response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
-      response.end(data);
-      logger.logInfo(_className, 'Served information. Student: ' + studentNumber);
-    }
+  scraper.getSceduleData(studentID)
+  .then(function(data){
+    response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+    var responseObject = builder.createScheduleObject(data);
+    var res = _stringifyRespons(pretty, responseObject);
+    response.end(res);
+    logger.logInfo(_className, 'Served information. Student: ' + studentID);
+  })
+  .catch(function(){
+    response.writeHead(501, {'Content-Type': 'text/plain'});
+    response.end(_className + ': An error occured while scraping the AU website');
+  });
+}
+
+function handleExam(request, response) {
+  var studentID = url.parse(request.url, true).query.studentID;
+  var quarter = url.parse(request.url, true).query.quarter;
+  var pretty = url.parse(request.url, true).query.pretty;
+
+  if(_isURLParamsInvalid(studentID) || _isURLParamsInvalid(quarter)){
+    _dirtyURLResponse(response);
+    return;
+  }
+
+  scraper.getExamData(studentID, quarter)
+  .then(function(data){
+    response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+    var responseObject = builder.createExamObject(data);
+    var res = _stringifyRespons(pretty, responseObject);
+    response.end(res);
+    logger.logInfo(_className, 'Served information. Student: ' + studentID);
+  })
+  .catch(function(error){
+    response.writeHead(501, {'Content-Type': 'text/plain'});
+    response.end(_className + ': An error occured while scraping the AU website');
   });
 }
 
@@ -104,6 +103,7 @@ function _encodeURLWindows1252(urlToEncode){
 
 module.exports = {
   handleFaveicon: handleFaveicon,
+  handleRoot: handleRoot,
   handleSchedule: handleSchedule,
   handleExam: handleExam,
   handleParticipants: handleParticipants

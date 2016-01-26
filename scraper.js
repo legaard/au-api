@@ -11,7 +11,8 @@ var _examAndScheduleUrl = 'http://services.science.au.dk/apps/skema/ElevSkema.as
      j = request.jar();
 
 //Request data from the schedule service at AU
-function getSceduleData(studentNumber, callback) {
+function getSceduleData(studentNumber) {
+  var deferred = Q.defer();
 
   //Setting the options for the request
   var options = {
@@ -22,23 +23,30 @@ function getSceduleData(studentNumber, callback) {
   };
 
   //Update session and set url
-  _updateCookieAndSession(_scheduleSessionUrl).
-  then(function(){
+  _updateCookieAndSession(_scheduleSessionUrl)
+  .then(function(){
     request.post(options, function (error, response, body) {
       if (!error && response.statusCode == 200) {
         //Converting the response from the server, to show the letters æøå correct
         var res = _decode(body);
+        deferred.resolve(res);
         logger.logInfo(_className, 'Succesfully scraped the schedule website');
-        callback(null, res);
       } else {
+        deferred.reject(error);
         logger.logError(_className, 'An error occured while scraping');
-        callback(error);
       }
+    })
+    .catch(function(){
+      logger.logError(_className, 'Could not retrieve cookie and set session');
     });
   });
+
+  return deferred.promise;
 }
 
 function getExamData(studentNumber, quarter, callback){
+
+  var deferred = Q.defer();
 
   var options = {
     url: _examAndScheduleUrl,
@@ -54,38 +62,38 @@ function getExamData(studentNumber, quarter, callback){
       if (!error && response.statusCode == 200) {
         //Converting the response from the server, to show the letters æøå correct
         var res = _decode(body);
+        deferred.resolve(res);
         logger.logInfo(_className, 'Succesfully scraped the exam website');
-        callback(null, res);
       } else {
-        logger.logError(_className, 'An error occured while scraping');
-        callback(error);
+        deferred.reject(error);
+        logger.logError(_className, 'An error occured while scraping the exam website');
       }
+    })
+    .catch(function(){
+      logger.logError(_className, 'Could not retrieve cookie and set session');
     });
   });
 
-
+  return deferred.promise;
 }
 
 //Function used to update the cookie
 function _updateCookieAndSession(url) {
-
   var deferred = Q.defer();
 
-  request.post(url, function (error, response) {
+  request.get(url, function (error, response) {
     if (!error && response.statusCode == 200) {
-      logger.logInfo(_className, 'Session set to:' + url);
+      logger.logInfo(_className, 'Session set to: ' + url);
 
       var cookieString = response.headers['set-cookie'][0].split(';')[0];
       var cookie = request.cookie(cookieString);
+
       j.setCookie(cookie, 'http://services.science.au.dk/apps/skema/');
       logger.logInfo(_className,'Updated cookie');
 
       deferred.resolve();
-
     } else {
-
-      deferred.reject();
-      logger.logError(_className, 'Could not retrieve cookie and set session');
+      deferred.reject(error);
     }
   });
 
