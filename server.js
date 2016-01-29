@@ -15,33 +15,32 @@ http.createServer(function (req, res) {
 
   switch (path) {
     case '/':
-    requestHandler.handleRoot(req, res);
-    logger.logInfo(_className, 'Handled request for the root');
-    break;
+      requestHandler.handleRoot(req, res);
+      logger.logInfo(_className, 'Handled request for the root');
+      break;
     case '/schedule':
-    requestHandler.handleSchedule(req, res);
-    logger.logInfo(_className, 'Handled request for schedule data');
-    break;
+      requestHandler.handleSchedule(req, res);
+      logger.logInfo(_className, 'Handled request for schedule data');
+      break;
     case '/exam':
-    requestHandler.handleExam(req, res);
-    logger.logInfo(_className, 'Handled request for exam data');
-    break;
-    case '/participants':
-    requestHandler.handleParticipants(req, res);
-    logger.logInfo(_className, 'Handled request for data about participants');
-    break;
+      requestHandler.handleExam(req, res);
+      logger.logInfo(_className, 'Handled request for exam data');
+      break;
+    case '/class':
+      requestHandler.handleClass(req, res);
+      logger.logInfo(_className, 'Handled request for class data');
+      break;
     default:
-    res.end();
-    logger.logInfo(_className, 'Handled request for undefined path: ' + path);
+      requestHandler.handleUndefined(req, res);
+      logger.logInfo(_className, 'Handled request for undefined path: ' + path);
   }
-
 }).listen(_port);
 
 //Log the ip and port that the server is running on
 network.get_public_ip(function(error, ip){
   if(!error){
     logger.logInfo(_className, 'Is running on ' + ip + ':' + _port);
-  } else{
-    logger.logError(_className, 'Could not retrieve ip address');
+  } else {
+    logger.logError(_className, error.message);
   }
 });

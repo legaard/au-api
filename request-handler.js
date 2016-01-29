@@ -8,13 +8,18 @@ var _className = 'HANDLER';
 function handleRoot(request, response){
   var res = builder.createIndexResponse()
   .then(function(data){
-    response.writeHead(200, {'Content-Type': 'text/html'});
+    response.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'});
     response.end(data);
   })
   .catch(function(){
-    response.writeHead(501, {'Content-Type': 'text/plan'});
-    response.end(_className + ': Could not read index.html');
+    response.writeHead(404, {'Content-Type': 'text/plan; charset=utf-8'});
+    response.end('404: Could not find \'index.html\'');
   });
+}
+
+function handleUndefined(request, response){
+  response.writeHead(403, {'Content-Type': 'text/plan; charset=utf-8'});
+  response.end('403: Refuse to fulfill request');
 }
 
 function handleSchedule(request, response){
@@ -34,9 +39,9 @@ function handleSchedule(request, response){
     response.end(res);
     logger.logInfo(_className, 'Served information. Student: ' + studentID);
   })
-  .catch(function(){
-    response.writeHead(501, {'Content-Type': 'text/plain'});
-    response.end(_className + ': An error occured while scraping the AU website');
+  .catch(function(error){
+    response.writeHead(501, {'Content-Type': 'application/json; charset=utf-8'});
+    response.end(JSON.stringify({error: error.message}));
   });
 }
 
@@ -59,14 +64,33 @@ function handleExam(request, response) {
     logger.logInfo(_className, 'Served information. Student: ' + studentID);
   })
   .catch(function(error){
-    response.writeHead(501, {'Content-Type': 'text/plain'});
-    response.end(_className + ': An error occured while scraping the AU website');
+    response.writeHead(501, {'Content-Type': 'application/json; charset=utf-8'});
+    response.end(JSON.stringify({error: error.message}));
   });
 }
 
-function handleParticipants(request, response){
-  response.end();
-  logger.logInfo(_className, 'Not implemented the participants yet!');
+function handleClass(request, response){
+  var classID = url.parse(request.url, true).query.classID;
+  var classGroup = url.parse(request.url, true).query.classGroup;
+  var group = url.parse(request.url, true).query.group;
+  var pretty = url.parse(request.url, true).query.pretty;
+
+ if(_isURLParamsInvalid(classID) || _isURLParamsInvalid(classGroup) || _isURLParamsInvalid(group)){
+     _dirtyURLResponse(response);
+    return;
+  }
+
+  scraper.getClassData(classID, classGroup, group)
+  .then(function(data){
+    response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+    var responseObject = builder.createClassObject(data);
+    var res = _stringifyRespons(pretty, responseObject);
+    response.end(res);
+  })
+  .catch(function(error) {
+    response.writeHead(501, {'Content-Type': 'application/json; charset=utf-8'});
+    response.end(JSON.stringify({error: error.message}));
+  });
 
 }
 
@@ -74,12 +98,12 @@ function handleParticipants(request, response){
 
 function _dirtyURLResponse(response) {
   response.writeHead(200, {'Content-Type' : 'application/json; charset=utf-8'});
-  response.end(JSON.stringify({error: 'Dirty URL: Only alphanumeric characters are allowed'}));
+  response.end(JSON.stringify({error: 'Only alphanumeric characters are allowed in the URL params'}));
   logger.logInfo(_className, 'Created a dirty URL response');
 }
 
 function _isURLParamsInvalid(param) {
-  var pattern = new RegExp(/[^a-z0-9]/gi);
+  var pattern = new RegExp(/[^a-z0-9æøå]/ig);
   return pattern.test(param);
 }
 
@@ -91,13 +115,10 @@ function _stringifyRespons(shouldBePretty, object){
   }
 }
 
-function _encodeURLWindows1252(urlToEncode){
-
-}
-
 module.exports = {
   handleRoot: handleRoot,
+  handleUndefined: handleUndefined,
   handleSchedule: handleSchedule,
   handleExam: handleExam,
-  handleParticipants: handleParticipants
+  handleClass: handleClass
 };

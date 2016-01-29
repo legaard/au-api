@@ -5,73 +5,109 @@ var request = require('request'),
 
 // Variables used in this module
 var _examAndScheduleUrl = 'http://services.science.au.dk/apps/skema/ElevSkema.asp',
+    _classUrl = 'http://services.science.au.dk/apps/skema/holdliste.asp',
+
     _examSessionUrl = 'http://services.science.au.dk/apps/skema/VaelgelevSkema.asp?webnavn=EKSAMEN',
     _scheduleSessionUrl = 'http://services.science.au.dk/apps/skema/VaelgelevSkema.asp?webnavn=skema',
     _className = 'SCRAPER',
-     j = request.jar();
+
+    j = request.jar(),
+    timeoutThreshold = 30000;
 
 //Request data from the schedule service at AU
 function getSceduleData(studentNumber) {
   var deferred = Q.defer();
 
-  //Setting the options for the request
-  var options = {
-    url: _examAndScheduleUrl,
-    encoding: null,
-    jar: j,
-    form: {'B1': 'S%F8g', 'aarskort': studentNumber},
-  };
-
   //Update session and set url
   _updateCookieAndSession(_scheduleSessionUrl)
   .then(function(){
+
+    //Setting the options for the request
+    var options = {
+      url: _examAndScheduleUrl,
+      encoding: null,
+      jar: j,
+      timeout: timeoutThreshold,
+      form: {'B1': 'S%F8g', 'aarskort': studentNumber}
+    };
+
     request.post(options, function (error, response, body) {
       if (!error && response.statusCode == 200) {
         //Converting the response from the server, to show the letters æøå correct
         var res = _decode(body);
         deferred.resolve(res);
-        logger.logInfo(_className, 'Succesfully scraped the schedule website');
+        logger.logInfo(_className, 'Succesfully scraped the schedule site');
       } else {
-        deferred.reject(error);
-        logger.logError(_className, 'An error occured while scraping');
+        deferred.reject(new Error('The AU website responded with an error'));
+        logger.logError(_className, 'An error occured while scraping for schedule data');
       }
-    })
-    .catch(function(){
-      logger.logError(_className, 'Could not retrieve cookie and set session');
     });
+  })
+  .catch(function(error){
+    deferred.reject(error);
+    logger.logError(_className, 'Could not retrieve cookie and set session');
   });
 
   return deferred.promise;
 }
 
+
 function getExamData(studentNumber, quarter, callback){
-
   var deferred = Q.defer();
-
-  var options = {
-    url: _examAndScheduleUrl,
-    encoding: null,
-    jar: j,
-    form: {'B1': 'S%F8g', 'aarskort': studentNumber},
-  };
 
   //Update the cookie and set the session to exam
   _updateCookieAndSession(_examSessionUrl + quarter + '&sprog=da')
   .then(function(){
+
+    //Setting the options for the request
+    var options = {
+      url: _examAndScheduleUrl,
+      encoding: null,
+      jar: j,
+      timeout: timeoutThreshold,
+      form: {'B1': 'S%F8g', 'aarskort': studentNumber}
+    };
+
     request.post(options, function (error, response, body) {
       if (!error && response.statusCode == 200) {
         //Converting the response from the server, to show the letters æøå correct
         var res = _decode(body);
         deferred.resolve(res);
-        logger.logInfo(_className, 'Succesfully scraped the exam website');
+        logger.logInfo(_className, 'Succesfully scraped the exam site');
       } else {
-        deferred.reject(error);
-        logger.logError(_className, 'An error occured while scraping the exam website');
+        deferred.reject(new Error('The AU website responded with an error'));
+        logger.logError(_className, 'An error occured while scraping for exam data');
       }
-    })
-    .catch(function(){
-      logger.logError(_className, 'Could not retrieve cookie and set session');
     });
+  })
+  .catch(function(error){
+    deferred.reject(error);
+    logger.logError(_className, 'Could not retrieve cookie and set session');
+  });
+
+  return deferred.promise;
+}
+
+function getClassData(classID, classGroup, group){
+  var deferred = Q.defer();
+
+  var options = {
+    url: _classUrl + '?udbud=' + classID + '&holdgruppe_da=' +
+      _encodeToWindows1252(classGroup) + '&hold=' +
+      _encodeToWindows1252(group),
+    encoding: null,
+    timeout: timeoutThreshold
+  };
+
+  request.get(options, function(error, response, body){
+    if(!error && response.statusCode == 200){
+      var res = _decode(body);
+      deferred.resolve(res);
+      logger.logInfo(_className, 'Succesfully scraped the class site');
+    } else {
+      deferred.reject(new Error('The AU website responded with an error'));
+      logger.logError(_className, 'An error occured while scraping for class data');
+    }
   });
 
   return deferred.promise;
@@ -81,7 +117,12 @@ function getExamData(studentNumber, quarter, callback){
 function _updateCookieAndSession(url) {
   var deferred = Q.defer();
 
-  request.get(url, function (error, response) {
+  var options = {
+    url: url,
+    timeout: timeoutThreshold
+  };
+
+  request.get(options, function (error, response) {
     if (!error && response.statusCode == 200) {
       logger.logInfo(_className, 'Session set to: ' + url);
 
@@ -93,7 +134,7 @@ function _updateCookieAndSession(url) {
 
       deferred.resolve();
     } else {
-      deferred.reject(error);
+      deferred.reject(new Error('The AU website responded with an error'));
     }
   });
 
@@ -106,7 +147,18 @@ function _decode(data){
   return buffer.toString('utf-8');
 }
 
+function _encodeToWindows1252(stringToEncode){
+  return stringToEncode
+  .replace('Ø', '%D8')
+  .replace('ø', '%D8')
+  .replace('Å', '%C5')
+  .replace('å', '%E5')
+  .replace('Æ', '%C6')
+  .replace('æ', '%E6');
+}
+
 module.exports = {
   getSceduleData: getSceduleData,
-  getExamData: getExamData
+  getExamData: getExamData,
+  getClassData: getClassData
 };
