@@ -152,9 +152,9 @@ function _encodeToWindows1252(stringToEncode){
   .replace('Ø', '%D8')
   .replace('ø', '%D8')
   .replace('Å', '%C5')
-  .replace('å', '%E5')
+  .replace('å', '%C5')
   .replace('Æ', '%C6')
-  .replace('æ', '%E6');
+  .replace('æ', '%C6');
 }
 
 module.exports = {

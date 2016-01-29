@@ -17,27 +17,36 @@ function handleRoot(request, response){
   });
 }
 
+
 function handleUndefined(request, response){
   response.writeHead(403, {'Content-Type': 'text/plan; charset=utf-8'});
   response.end('403: Refuse to fulfill request');
 }
 
-function handleSchedule(request, response){
-  var studentID = url.parse(request.url, true).query.studentID;
-  var pretty = url.parse(request.url, true).query.pretty;
 
-  if(_isURLParamsInvalid(studentID)){
+function handleSchedule(request, response){
+  var studentID = url.parse(request.url, true).query.studentID,
+      pretty = url.parse(request.url, true).query.pretty,
+      callback = url.parse(request.url, true).query.callback;
+
+  if(_isURLParamsInvalid(studentID) || _isURLParamsInvalid(callback)){
     _dirtyURLResponse(response);
     return;
   }
 
   scraper.getSceduleData(studentID)
   .then(function(data){
-    response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
     var responseObject = builder.createScheduleObject(data);
-    var res = _stringifyRespons(pretty, responseObject);
-    response.end(res);
-    logger.logInfo(_className, 'Served information. Student: ' + studentID);
+
+    if(callback){
+      response.writeHead(200, {'Content-Type': 'application/javascript; charset=utf-8'});
+      response.end(_jsonpRespons(responseObject, callback));
+    } else {
+      response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+      response.end(_stringifyRespons(pretty, responseObject));
+    }
+
+    logger.logInfo(_className, 'Served information for student: ' + studentID);
   })
   .catch(function(error){
     response.writeHead(501, {'Content-Type': 'application/json; charset=utf-8'});
@@ -45,23 +54,31 @@ function handleSchedule(request, response){
   });
 }
 
-function handleExam(request, response) {
-  var studentID = url.parse(request.url, true).query.studentID;
-  var quarter = url.parse(request.url, true).query.quarter;
-  var pretty = url.parse(request.url, true).query.pretty;
 
-  if(_isURLParamsInvalid(studentID) || _isURLParamsInvalid(quarter)){
+function handleExam(request, response) {
+  var studentID = url.parse(request.url, true).query.studentID,
+      quarter = url.parse(request.url, true).query.quarter,
+      pretty = url.parse(request.url, true).query.pretty,
+      callback = url.parse(request.url, true).query.callback;
+
+  if(_isURLParamsInvalid(studentID) || _isURLParamsInvalid(quarter) || _isURLParamsInvalid(callback)){
     _dirtyURLResponse(response);
     return;
   }
 
   scraper.getExamData(studentID, quarter)
   .then(function(data){
-    response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
     var responseObject = builder.createExamObject(data);
-    var res = _stringifyRespons(pretty, responseObject);
-    response.end(res);
-    logger.logInfo(_className, 'Served information. Student: ' + studentID);
+
+    if(callback){
+      response.writeHead(200, {'Content-Type': 'application/javascript; charset=utf-8'});
+      response.end(_jsonpRespons(responseObject, callback));
+    } else {
+      response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+      response.end(_stringifyRespons(pretty, responseObject));
+    }
+
+    logger.logInfo(_className, 'Served information for student: ' + studentID);
   })
   .catch(function(error){
     response.writeHead(501, {'Content-Type': 'application/json; charset=utf-8'});
@@ -69,33 +86,41 @@ function handleExam(request, response) {
   });
 }
 
-function handleClass(request, response){
-  var classID = url.parse(request.url, true).query.classID;
-  var classGroup = url.parse(request.url, true).query.classGroup;
-  var group = url.parse(request.url, true).query.group;
-  var pretty = url.parse(request.url, true).query.pretty;
 
- if(_isURLParamsInvalid(classID) || _isURLParamsInvalid(classGroup) || _isURLParamsInvalid(group)){
-     _dirtyURLResponse(response);
+function handleClass(request, response){
+  var classID = url.parse(request.url, true).query.classID,
+      classGroup = url.parse(request.url, true).query.classGroup,
+      group = url.parse(request.url, true).query.group,
+      pretty = url.parse(request.url, true).query.pretty,
+      callback = url.parse(request.url, true).query.callback;
+
+ if(_isURLParamsInvalid(classID) || _isURLParamsInvalid(classGroup) || _isURLParamsInvalid(group) || _isURLParamsInvalid(callback)){
+    _dirtyURLResponse(response);
     return;
   }
 
   scraper.getClassData(classID, classGroup, group)
   .then(function(data){
-    response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
     var responseObject = builder.createClassObject(data);
-    var res = _stringifyRespons(pretty, responseObject);
-    response.end(res);
+
+    if(callback){
+      response.writeHead(200, {'Content-Type': 'application/javascript; charset=utf-8'});
+      response.end(_jsonpRespons(responseObject, callback));
+    } else {
+      response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+      response.end(_stringifyRespons(pretty, responseObject));
+    }
+
+    logger.logInfo(_className, 'Served information for class: ' + classID);
   })
   .catch(function(error) {
     response.writeHead(501, {'Content-Type': 'application/json; charset=utf-8'});
     response.end(JSON.stringify({error: error.message}));
   });
-
 }
 
-/* METHODS NOT EXPOSED THROUGH THE MODULE */
 
+/* METHODS NOT EXPOSED THROUGH THE MODULE */
 function _dirtyURLResponse(response) {
   response.writeHead(200, {'Content-Type' : 'application/json; charset=utf-8'});
   response.end(JSON.stringify({error: 'Only alphanumeric characters are allowed in the URL params'}));
@@ -113,6 +138,10 @@ function _stringifyRespons(shouldBePretty, object){
   } else {
     return JSON.stringify(object);
   }
+}
+
+function _jsonpRespons(data, callbackName){
+  return (callbackName + '(' + JSON.stringify(data) + ')');
 }
 
 module.exports = {
