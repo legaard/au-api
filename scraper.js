@@ -36,7 +36,7 @@ function getSceduleData(studentNumber) {
         //Converting the response from the server, to show the letters æøå correct
         var res = _decode(body);
         deferred.resolve(res);
-        logger.logInfo(_className, 'Succesfully scraped the schedule site');
+        logger.logInfo(_className, 'Successfully scraped the schedule site');
       } else {
         deferred.reject(new Error('The AU website responded with an error'));
         logger.logError(_className, 'An error occured while scraping for schedule data');
@@ -73,7 +73,7 @@ function getExamData(studentNumber, quarter, callback){
         //Converting the response from the server, to show the letters æøå correct
         var res = _decode(body);
         deferred.resolve(res);
-        logger.logInfo(_className, 'Succesfully scraped the exam site');
+        logger.logInfo(_className, 'Successfully scraped the exam site');
       } else {
         deferred.reject(new Error('The AU website responded with an error'));
         logger.logError(_className, 'An error occured while scraping for exam data');
@@ -103,7 +103,7 @@ function getClassData(classID, classGroup, group){
     if(!error && response.statusCode == 200){
       var res = _decode(body);
       deferred.resolve(res);
-      logger.logInfo(_className, 'Succesfully scraped the class site');
+      logger.logInfo(_className, 'Successfully scraped the class site');
     } else {
       deferred.reject(new Error('The AU website responded with an error'));
       logger.logError(_className, 'An error occured while scraping for class data');
@@ -150,11 +150,11 @@ function _decode(data){
 function _encodeToWindows1252(stringToEncode){
   return stringToEncode
   .replace('Ø', '%D8')
-  .replace('ø', '%D8')
+  .replace('ø', '%F8')
   .replace('Å', '%C5')
-  .replace('å', '%C5')
+  .replace('å', '%E5')
   .replace('Æ', '%C6')
-  .replace('æ', '%C6');
+  .replace('æ', '%E6');
 }
 
 module.exports = {
