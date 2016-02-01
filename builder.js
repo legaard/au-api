@@ -120,7 +120,7 @@ function createClassObject(htmlString){
   var numberOfStudents = $('h2', $body).eq(1).text();
   var tempArray = numberOfStudents.split(' ');
 
-  build.numberOfStudents = numberOfStudents.indexOf('ingen studerende') > -1 ? null: tempArray[tempArray.length - 2].substring(1);
+  build.numberOfStudents = numberOfStudents.indexOf('ingen studerende') > -1 ? null : parseInt(tempArray[tempArray.length - 2].substring(1), 10);
   build.courseName = courseName;
   build.students = [];
 
@@ -158,20 +158,21 @@ function _removeEndingOnCourseType(type) {
 
   switch (type) {
     case 'Forelæsninger':
-    trimmedType = 'forelæsning';
-    break;
+      trimmedType = 'forelæsning';
+      break;
     case 'Teoretiske øvelser':
-    trimmedType = 'teoretisk øvelse';
-    break;
+      trimmedType = 'teoretisk øvelse';
+      break;
     case 'Laboratorieøvelser':
-    trimmedType = 'laboratorieøvelse';
-    break;
+      trimmedType = 'laboratorieøvelse';
+      break;
     case 'Øvelser':
-    trimmedType = 'øvelse';
-    break;
+      trimmedType = 'øvelse';
+      break;
     default:
     trimmedType = type;
   }
+
   return trimmedType;
 }
 

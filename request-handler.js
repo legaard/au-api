@@ -25,16 +25,25 @@ function handleUndefined(request, response){
 
 
 function handleSchedule(request, response){
-  var studentID = url.parse(request.url, true).query.studentID,
+  var studentId = url.parse(request.url, true).query.studentId,
+
       pretty = url.parse(request.url, true).query.pretty,
       callback = url.parse(request.url, true).query.callback;
 
-  if(_isURLParamsInvalid(studentID) || _isURLParamsInvalid(callback)){
-    _dirtyURLResponse(response);
+  var paramArray = [];
+  paramArray.push(studentId);
+
+  if(!_isNumberOfUrlParamsCorrect(paramArray, 1)){
+    _incorrectParamResponse(response);
     return;
   }
 
-  scraper.getSceduleData(studentID)
+  if(!_isUrlParamsValid(paramArray)){
+    _dirtyUrlResponse(response);
+    return;
+  }
+
+  scraper.getSceduleData(studentId)
   .then(function(data){
     var responseObject = builder.createScheduleObject(data);
 
@@ -46,7 +55,7 @@ function handleSchedule(request, response){
       response.end(_stringifyRespons(pretty, responseObject));
     }
 
-    logger.logInfo(_className, 'Served information for student: ' + studentID);
+    logger.logInfo(_className, 'Served information for student: ' + studentId);
   })
   .catch(function(error){
     response.writeHead(501, {'Content-Type': 'application/json; charset=utf-8'});
@@ -56,17 +65,27 @@ function handleSchedule(request, response){
 
 
 function handleExam(request, response) {
-  var studentID = url.parse(request.url, true).query.studentID,
+  var studentId = url.parse(request.url, true).query.studentId,
       quarter = url.parse(request.url, true).query.quarter,
+
       pretty = url.parse(request.url, true).query.pretty,
       callback = url.parse(request.url, true).query.callback;
 
-  if(_isURLParamsInvalid(studentID) || _isURLParamsInvalid(quarter) || _isURLParamsInvalid(callback)){
-    _dirtyURLResponse(response);
+  var paramArray = [];
+  paramArray.push(studentId);
+  paramArray.push(quarter);
+
+  if(!_isNumberOfUrlParamsCorrect(paramArray, 2)){
+    _incorrectParamResponse(response);
     return;
   }
 
-  scraper.getExamData(studentID, quarter)
+  if(!_isUrlParamsValid(paramArray)){
+    _dirtyUrlResponse(response);
+    return;
+  }
+
+  scraper.getExamData(studentId, quarter)
   .then(function(data){
     var responseObject = builder.createExamObject(data);
 
@@ -78,7 +97,7 @@ function handleExam(request, response) {
       response.end(_stringifyRespons(pretty, responseObject));
     }
 
-    logger.logInfo(_className, 'Served information for student: ' + studentID);
+    logger.logInfo(_className, 'Served information for student: ' + studentId);
   })
   .catch(function(error){
     response.writeHead(501, {'Content-Type': 'application/json; charset=utf-8'});
@@ -88,18 +107,29 @@ function handleExam(request, response) {
 
 
 function handleClass(request, response){
-  var classID = url.parse(request.url, true).query.classID,
+  var classId = url.parse(request.url, true).query.classId,
       classGroup = url.parse(request.url, true).query.classGroup,
       group = url.parse(request.url, true).query.group,
+
       pretty = url.parse(request.url, true).query.pretty,
       callback = url.parse(request.url, true).query.callback;
 
- if(_isURLParamsInvalid(classID) || _isURLParamsInvalid(classGroup) || _isURLParamsInvalid(group) || _isURLParamsInvalid(callback)){
-    _dirtyURLResponse(response);
+  var paramArray = [];
+  paramArray.push(classId);
+  paramArray.push(classGroup);
+  paramArray.push(group);
+
+  if(!_isNumberOfUrlParamsCorrect(paramArray, 3)){
+    _incorrectParamResponse(response);
     return;
   }
 
-  scraper.getClassData(classID, classGroup, group)
+  if(!_isUrlParamsValid(paramArray)){
+    _dirtyUrlResponse(response);
+    return;
+  }
+
+  scraper.getClassData(classId, classGroup, group)
   .then(function(data){
     var responseObject = builder.createClassObject(data);
 
@@ -111,7 +141,7 @@ function handleClass(request, response){
       response.end(_stringifyRespons(pretty, responseObject));
     }
 
-    logger.logInfo(_className, 'Served information for class: ' + classID);
+    logger.logInfo(_className, 'Served information for class: ' + classId);
   })
   .catch(function(error) {
     response.writeHead(501, {'Content-Type': 'application/json; charset=utf-8'});
@@ -121,23 +151,40 @@ function handleClass(request, response){
 
 
 /* METHODS NOT EXPOSED THROUGH THE MODULE */
-function _dirtyURLResponse(response) {
+function _dirtyUrlResponse(response) {
   response.writeHead(200, {'Content-Type' : 'application/json; charset=utf-8'});
-  response.end(JSON.stringify({error: 'Only alphanumeric characters are allowed in the URL params'}));
-  logger.logInfo(_className, 'Created a dirty URL response');
+  response.end(JSON.stringify({info: 'Only alphanumeric characters are allowed in the URL params'}));
+  logger.logInfo(_className, 'Created a \'dirty URL\' response');
 }
 
-function _isURLParamsInvalid(param) {
+function _incorrectParamResponse(response){
+  response.writeHead(200, {'Content-Type' : 'application/json; charset=utf-8'});
+  response.end(JSON.stringify({info: 'Incorrect number of URL parameters provided'}));
+  logger.logInfo(_className, 'Created a \'not enough params provided\' response');
+}
+
+function _isNumberOfUrlParamsCorrect(paramArray, requiredNumber){
+  var numberOfParams = 0;
+  for (var i = 0; i < paramArray.length; i++) {
+    if(paramArray[i]){
+      numberOfParams++;
+    }
+  }
+  return numberOfParams === requiredNumber;
+}
+
+function _isUrlParamsValid(paramArray) {
   var pattern = new RegExp(/[^a-z0-9æøå]/ig);
-  return pattern.test(param);
+  for (var i = 0; i < paramArray.length; i++) {
+    if(pattern.test(paramArray[i])){
+      return false;
+    }
+  }
+  return true;
 }
 
 function _stringifyRespons(shouldBePretty, object){
-  if(shouldBePretty === 'true'){
-    return JSON.stringify(object, null, 2);
-  } else {
-    return JSON.stringify(object);
-  }
+  return (shouldBePretty === 'true') ? JSON.stringify(object, null, 2) : JSON.stringify(object);
 }
 
 function _jsonpRespons(data, callbackName){

@@ -6,7 +6,7 @@ var http = require('http'),
     requestHandler = require('./request-handler');
 
 //Variables to be used in this file
-var _port = 8080,
+var _port = process.env.SERVER_PORT || 8080,
     _className = 'SERVER';
 
 http.createServer(function (req, res) {
