@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "production": "export SERVER_PORT=80 && node server.js"
+    "production": "sudo env SERVER_PORT=80 && sudo forever start server.js"
   },
   "author": "Lasse Legaard",
   "license": "ISC",
