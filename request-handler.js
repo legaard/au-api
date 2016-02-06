@@ -174,7 +174,7 @@ function _isNumberOfUrlParamsCorrect(paramArray, requiredNumber){
 }
 
 function _isUrlParamsValid(paramArray) {
-  var pattern = new RegExp(/[^a-z0-9æøå]/ig);
+  var pattern = new RegExp(/[^a-z0-9æøå\s]/ig);
   for (var i = 0; i < paramArray.length; i++) {
     if(pattern.test(paramArray[i])){
       return false;

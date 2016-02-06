@@ -41,7 +41,7 @@ function createScheduleObject(htmlString) {
       //Adding properties to the course object
       course.courseName = courseName;
       course.type = _removeEndingOnCourseType(type);
-      course.day = $td.eq(1).text().toLowerCase();
+      course.day = $td.eq(1).text();
       course.time = $td.eq(2).text().replace(/\s/g, '').trim();
       course.location = {};
       course.location.information = $td.eq(3).text().trim();
@@ -92,7 +92,7 @@ function createExamObject(htmlString){
 
       //Adding properties to the exam object
       exam.examName = examName;
-      exam.type = type.toLowerCase();
+      exam.type = type;
       exam.date = $td.eq(1).text().trim();
       exam.time = $td.eq(2).text().replace(/\s/g, '').trim();
       exam.location = {};
@@ -158,16 +158,16 @@ function _removeEndingOnCourseType(type) {
 
   switch (type) {
     case 'Forelæsninger':
-      trimmedType = 'forelæsning';
+      trimmedType = 'Forelæsning';
       break;
     case 'Teoretiske øvelser':
-      trimmedType = 'teoretisk øvelse';
+      trimmedType = 'Teoretisk øvelse';
       break;
     case 'Laboratorieøvelser':
-      trimmedType = 'laboratorieøvelse';
+      trimmedType = 'Laboratorieøvelse';
       break;
     case 'Øvelser':
-      trimmedType = 'øvelse';
+      trimmedType = 'Øvelse';
       break;
     default:
     trimmedType = type;
