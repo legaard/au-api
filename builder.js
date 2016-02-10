@@ -137,6 +137,20 @@ function createClassObject(htmlString){
   return build;
 }
 
+function createTestObject(testName){
+  var deferred = Q.defer();
+
+  fs.readFile('./assets/tests/' + testName + '.json', 'utf8', function(error, data){
+    if(!error){
+      deferred.resolve(JSON.parse(data));
+    } else {
+      deferred.reject(new Error('The value of the \'data\' parameter is not supported'));
+    }
+  });
+
+  return deferred.promise;
+}
+
 function createIndexResponse(){
   var deferred = Q.defer();
 
@@ -191,5 +205,6 @@ module.exports = {
   createScheduleObject: createScheduleObject,
   createExamObject: createExamObject,
   createClassObject: createClassObject,
-  createIndexResponse: createIndexResponse
+  createIndexResponse: createIndexResponse,
+  createTestObject: createTestObject
 };

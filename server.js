@@ -6,7 +6,7 @@ var http = require('http'),
     requestHandler = require('./request-handler');
 
 //Variables to be used in this file
-var _port = process.env.SERVER_PORT || 8080,
+var _port = process.argv[2] || 8080,
     _className = 'SERVER';
 
 http.createServer(function (req, res) {
@@ -29,6 +29,10 @@ http.createServer(function (req, res) {
     case '/class':
       requestHandler.handleClass(req, res);
       logger.logInfo(_className, 'Handled request for class data');
+      break;
+    case '/test':
+      requestHandler.handleTest(req, res);
+      logger.logInfo(_className, 'Handled request for test data');
       break;
     default:
       requestHandler.handleUndefined(req, res);

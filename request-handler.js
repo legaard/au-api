@@ -149,6 +149,44 @@ function handleClass(request, response){
   });
 }
 
+function handleTest(request, response){
+  var test = url.parse(request.url, true).query.data,
+
+      pretty = url.parse(request.url, true).query.pretty,
+      callback = url.parse(request.url, true).query.callback;
+
+  var paramArray = [];
+  paramArray.push(test);
+
+  if(!_isNumberOfUrlParamsCorrect(paramArray, 1)){
+    _incorrectParamResponse(response);
+    return;
+  }
+
+  if(!_isUrlParamsValid(paramArray)){
+    _dirtyUrlResponse(response);
+    return;
+  }
+
+  builder.createTestObject(test)
+  .then(function(data){
+
+    if(callback){
+      response.writeHead(200, {'Content-Type': 'application/javascript; charset=utf-8'});
+      response.end(_jsonpRespons(data, callback));
+    } else {
+      response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+      response.end(_stringifyRespons(pretty, data));
+    }
+
+    logger.logInfo(_className, 'Served test data');
+  })
+  .catch(function(error){
+    response.writeHead(501, {'Content-Type': 'application/json; charset=utf-8'});
+    response.end(JSON.stringify({error: error.message}));
+  });
+}
+
 
 /* METHODS NOT EXPOSED THROUGH THE MODULE */
 function _dirtyUrlResponse(response) {
@@ -196,5 +234,6 @@ module.exports = {
   handleUndefined: handleUndefined,
   handleSchedule: handleSchedule,
   handleExam: handleExam,
-  handleClass: handleClass
+  handleClass: handleClass,
+  handleTest: handleTest
 };
