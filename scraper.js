@@ -4,11 +4,12 @@ var request = require('request'),
     logger = require('./logger');
 
 // Variables used in this module
-var _examAndScheduleUrl = 'http://services.science.au.dk/apps/skema/ElevSkema.asp',
-    _classUrl = 'http://services.science.au.dk/apps/skema/holdliste.asp',
+var _domain = 'http://timetable.scitech.au.dk',
+    _examAndScheduleUrl = _domain + '/apps/skema/ElevSkema.asp',
+    _classUrl = _domain + '/apps/skema/holdliste.asp',
 
-    _examSessionUrl = 'http://services.science.au.dk/apps/skema/VaelgelevSkema.asp?webnavn=EKSAMEN',
-    _scheduleSessionUrl = 'http://services.science.au.dk/apps/skema/VaelgelevSkema.asp?webnavn=skema',
+    _examSessionUrl =  _domain + '/apps/skema/VaelgelevSkema.asp?webnavn=EKSAMEN',
+    _scheduleSessionUrl = _domain + '/apps/skema/VaelgelevSkema.asp?webnavn=skema',
     _className = 'SCRAPER',
 
     j = request.jar(),
@@ -129,7 +130,7 @@ function _updateCookieAndSession(url) {
       var cookieString = response.headers['set-cookie'][0].split(';')[0];
       var cookie = request.cookie(cookieString);
 
-      j.setCookie(cookie, 'http://services.science.au.dk/apps/skema/');
+      j.setCookie(cookie, _domain + '/apps/skema/');
       logger.logInfo(_className,'Updated cookie');
 
       deferred.resolve();
