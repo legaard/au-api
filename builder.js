@@ -46,7 +46,7 @@ function createScheduleObject(htmlString) {
       course.location = {};
       course.location.information = $td.eq(3).text().trim();
       course.location.link = $td.eq(3).children().eq(0).attr('href');
-      course.week = $td.eq(4).text().replace(/uge/g, '').trim();
+      course.weeks = $td.eq(4).text().replace(/uge/g, '').trim();
       course.class = _URLToClassObject($td.eq(0).children().eq(0).attr('href'));
       course.note = $td.eq(5).children().eq(0).text().trim();
 
