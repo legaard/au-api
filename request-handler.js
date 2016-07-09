@@ -12,14 +12,14 @@ function handleRoot(request, response){
     response.end(data);
   })
   .catch(function(){
-    response.writeHead(404, {'Content-Type': 'text/plan; charset=utf-8'});
+    response.writeHead(404, {'Content-Type': 'text/plain; charset=utf-8'});
     response.end('404: Could not find \'index.html\'');
   });
 }
 
 
 function handleUndefined(request, response){
-  response.writeHead(403, {'Content-Type': 'text/plan; charset=utf-8'});
+  response.writeHead(403, {'Content-Type': 'text/plain; charset=utf-8'});
   response.end('403: Refuse to fulfill request');
 }
 
@@ -45,13 +45,19 @@ function handleSchedule(request, response){
 
   scraper.getSceduleData(studentId)
   .then(function(data){
-    var responseObject = builder.createScheduleObject(data);
+    var responseObject = builder.createScheduleObject(data),
+        responseCode = 200;
+
+    if (!responseObject) {
+      responseCode = 404;
+      responseObject = {error: 'Ingen studerende matchede det givne studienummer'};
+    }
 
     if(callback){
-      response.writeHead(200, {'Content-Type': 'application/javascript; charset=utf-8'});
+      response.writeHead(responseCode, {'Content-Type': 'application/javascript; charset=utf-8'});
       response.end(_jsonpRespons(responseObject, callback));
     } else {
-      response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+      response.writeHead(responseCode, {'Content-Type': 'application/json; charset=utf-8'});
       response.end(_stringifyRespons(pretty, responseObject));
     }
 
@@ -87,13 +93,19 @@ function handleExam(request, response) {
 
   scraper.getExamData(studentId, quarter)
   .then(function(data){
-    var responseObject = builder.createExamObject(data);
+    var responseObject = builder.createExamObject(data),
+        responseCode = 200;
+
+    if (!responseObject) {
+      responseCode = 404;
+      responseObject = {error: 'Ingen eksamen matchede det givne studienummer'};
+    }
 
     if(callback){
-      response.writeHead(200, {'Content-Type': 'application/javascript; charset=utf-8'});
+      response.writeHead(responseCode, {'Content-Type': 'application/javascript; charset=utf-8'});
       response.end(_jsonpRespons(responseObject, callback));
     } else {
-      response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+      response.writeHead(responseCode, {'Content-Type': 'application/json; charset=utf-8'});
       response.end(_stringifyRespons(pretty, responseObject));
     }
 
@@ -131,13 +143,19 @@ function handleClass(request, response){
 
   scraper.getClassData(classId, classGroup, group)
   .then(function(data){
-    var responseObject = builder.createClassObject(data);
+    var responseObject = builder.createClassObject(data),
+        responseCode = 200;
+
+    if (!responseObject) {
+      responseCode = 404;
+      responseObject = {error: 'Ingen klasse matchede de givne oplysninger'};
+    }
 
     if(callback){
-      response.writeHead(200, {'Content-Type': 'application/javascript; charset=utf-8'});
+      response.writeHead(responseCode, {'Content-Type': 'application/javascript; charset=utf-8'});
       response.end(_jsonpRespons(responseObject, callback));
     } else {
-      response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+      response.writeHead(responseCode, {'Content-Type': 'application/json; charset=utf-8'});
       response.end(_stringifyRespons(pretty, responseObject));
     }
 
@@ -190,14 +208,14 @@ function handleTest(request, response){
 
 /* METHODS NOT EXPOSED THROUGH THE MODULE */
 function _dirtyUrlResponse(response) {
-  response.writeHead(200, {'Content-Type' : 'application/json; charset=utf-8'});
-  response.end(JSON.stringify({info: 'Only alphanumeric characters are allowed in the URL params'}));
+  response.writeHead(400, {'Content-Type' : 'application/json; charset=utf-8'});
+  response.end(JSON.stringify({error: 'Kun alfanumeriske værdier er tilladt'}));
   logger.logInfo(_className, 'Created a \'dirty URL\' response');
 }
 
 function _incorrectParamResponse(response){
-  response.writeHead(200, {'Content-Type' : 'application/json; charset=utf-8'});
-  response.end(JSON.stringify({info: 'Incorrect number of URL parameters provided'}));
+  response.writeHead(400, {'Content-Type' : 'application/json; charset=utf-8'});
+  response.end(JSON.stringify({error: 'Forkert antal parametre blev givet'}));
   logger.logInfo(_className, 'Created a \'not enough params provided\' response');
 }
 

@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "production": "sudo forever stopall && sudo forever start server.js"
+    "production": "forever stopall && forever start cluster.js 80"
   },
   "author": "Lasse Legaard",
   "license": "ISC",

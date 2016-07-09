@@ -20,7 +20,7 @@ function createScheduleObject(htmlString) {
   //Return an error if no student has the studentID
   if(!build.studentName){
     logger.logInfo(_className, 'No student match. Error object created');
-    return {info: 'No student matching the studentID provided'};
+    return undefined;
   }
 
   //Creating an array of courses
@@ -73,7 +73,7 @@ function createExamObject(htmlString){
   //Return an error if no student match the id provided
   if(!build.studentName){
     logger.logInfo(_className, 'No student match. Error object created');
-    return {info: 'No student matching the studentID provided'};
+    return undefined;
   }
 
   //Creating an array for the exams
@@ -126,7 +126,7 @@ function createClassObject(htmlString){
 
   if (!build.numberOfStudents) {
     logger.logInfo(_className, 'No class match. Error object created');
-    return {info: 'No class matching the provided data'};
+    return undefined;
   }
 
   $('tr', $body).each(function(i, element){
