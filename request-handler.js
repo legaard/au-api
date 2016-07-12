@@ -49,8 +49,8 @@ function handleSchedule(request, response){
         responseCode = 200;
 
     if (!responseObject) {
-      responseCode = 404;
-      responseObject = {error: 'Ingen studerende matchede det givne studienummer'};
+      responseCode = 204;
+      responseObject = {error: 'No student matched the student-ID'};
     }
 
     if(callback){
@@ -97,8 +97,8 @@ function handleExam(request, response) {
         responseCode = 200;
 
     if (!responseObject) {
-      responseCode = 404;
-      responseObject = {error: 'Ingen eksamen matchede det givne studienummer'};
+      responseCode = 204;
+      responseObject = {error: 'No exams matched the student-ID'};
     }
 
     if(callback){
@@ -147,8 +147,8 @@ function handleClass(request, response){
         responseCode = 200;
 
     if (!responseObject) {
-      responseCode = 404;
-      responseObject = {error: 'Ingen klasse matchede de givne oplysninger'};
+      responseCode = 204;
+      responseObject = {error: 'No classes matched the given parameters'};
     }
 
     if(callback){
@@ -209,13 +209,13 @@ function handleTest(request, response){
 /* METHODS NOT EXPOSED THROUGH THE MODULE */
 function _dirtyUrlResponse(response) {
   response.writeHead(400, {'Content-Type' : 'application/json; charset=utf-8'});
-  response.end(JSON.stringify({error: 'Kun alfanumeriske værdier er tilladt'}));
+  response.end(JSON.stringify({error: 'Only alphanumeric values are allowed'}));
   logger.logInfo(_className, 'Created a \'dirty URL\' response');
 }
 
 function _incorrectParamResponse(response){
   response.writeHead(400, {'Content-Type' : 'application/json; charset=utf-8'});
-  response.end(JSON.stringify({error: 'Forkert antal parametre blev givet'}));
+  response.end(JSON.stringify({error: 'Wrong number of parameters provided'}));
   logger.logInfo(_className, 'Created a \'not enough params provided\' response');
 }
 

@@ -39,7 +39,7 @@ function getSceduleData(studentNumber) {
         deferred.resolve(res);
         logger.logInfo(_className, 'Successfully scraped the schedule site');
       } else {
-        deferred.reject(new Error('Kunne ikke komme i kontakt med AU\'s server'));
+        deferred.reject(new Error('The AU server is not responding'));
         logger.logError(_className, 'An error occured while scraping for schedule data');
       }
     });
@@ -76,7 +76,7 @@ function getExamData(studentNumber, quarter, callback){
         deferred.resolve(res);
         logger.logInfo(_className, 'Successfully scraped the exam site');
       } else {
-        deferred.reject(new Error('Kunne ikke komme i kontakt med AU\'s server'));
+        deferred.reject(new Error('The AU server is not responding'));
         logger.logError(_className, 'An error occured while scraping for exam data');
       }
     });
@@ -106,7 +106,7 @@ function getClassData(classID, classGroup, group){
       deferred.resolve(res);
       logger.logInfo(_className, 'Successfully scraped the class site');
     } else {
-      deferred.reject(new Error('Kunne ikke komme i kontakt med AU\'s server'));
+      deferred.reject(new Error('The AU server is not responding'));
       logger.logError(_className, 'An error occured while scraping for class data');
     }
   });
@@ -135,7 +135,7 @@ function _updateCookieAndSession(url) {
 
       deferred.resolve();
     } else {
-      deferred.reject(new Error('AU\'s server svarede med en fejl'));
+      deferred.reject(new Error('AU\'s server responded with an error'));
     }
   });
 
