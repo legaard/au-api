@@ -37,7 +37,6 @@ function getSceduleData(studentNumber) {
         //Converting the response from the server, to show the letters æøå correct
         var res = _decode(body);
         deferred.resolve(res);
-        logger.logInfo(_className, 'Successfully scraped the schedule site');
       } else {
         deferred.reject(new Error('The AU server is not responding'));
         logger.logError(_className, 'An error occured while scraping for schedule data');
@@ -74,7 +73,6 @@ function getExamData(studentNumber, quarter, callback){
         //Converting the response from the server, to show the letters æøå correct
         var res = _decode(body);
         deferred.resolve(res);
-        logger.logInfo(_className, 'Successfully scraped the exam site');
       } else {
         deferred.reject(new Error('The AU server is not responding'));
         logger.logError(_className, 'An error occured while scraping for exam data');
@@ -104,7 +102,6 @@ function getClassData(classID, classGroup, group){
     if(!error && response.statusCode == 200){
       var res = _decode(body);
       deferred.resolve(res);
-      logger.logInfo(_className, 'Successfully scraped the class site');
     } else {
       deferred.reject(new Error('The AU server is not responding'));
       logger.logError(_className, 'An error occured while scraping for class data');
@@ -131,7 +128,6 @@ function _updateCookieAndSession(url) {
       var cookie = request.cookie(cookieString);
 
       j.setCookie(cookie, _domain + '/apps/skema/');
-      logger.logInfo(_className,'Updated cookie');
 
       deferred.resolve();
     } else {

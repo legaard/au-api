@@ -14,25 +14,17 @@ http.createServer(function (req, res) {
   var path = url.parse(req.url, true).pathname;
 
   switch (path) {
-    case '/':
-      requestHandler.handleRoot(req, res);
-      logger.logInfo(_className, 'Handled request for the root');
-      break;
     case '/schedule':
       requestHandler.handleSchedule(req, res);
-      logger.logInfo(_className, 'Handled request for schedule data');
       break;
     case '/exam':
       requestHandler.handleExam(req, res);
-      logger.logInfo(_className, 'Handled request for exam data');
       break;
     case '/class':
       requestHandler.handleClass(req, res);
-      logger.logInfo(_className, 'Handled request for class data');
       break;
     case '/test':
       requestHandler.handleTest(req, res);
-      logger.logInfo(_className, 'Handled request for test data');
       break;
     default:
       requestHandler.handleUndefined(req, res);

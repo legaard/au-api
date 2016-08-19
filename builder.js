@@ -55,7 +55,6 @@ function createScheduleObject(htmlString) {
     }
   });
 
-  logger.logInfo(_className, 'Created schedule object');
   return build;
 }
 
@@ -106,7 +105,6 @@ function createExamObject(htmlString){
     }
   });
 
-  logger.logInfo(_className, 'Created exam object');
   return build;
 }
 
@@ -133,7 +131,6 @@ function createClassObject(htmlString){
     build.students.push($('td', this).eq(1).text().trim());
   });
 
-  logger.logInfo(_className, 'Created class object');
   return build;
 }
 
@@ -145,22 +142,6 @@ function createTestObject(testName){
       deferred.resolve(JSON.parse(data));
     } else {
       deferred.reject(new Error('The value of the \'data\' parameter is not supported'));
-    }
-  });
-
-  return deferred.promise;
-}
-
-function createIndexResponse(){
-  var deferred = Q.defer();
-
-  fs.readFile('./index.html', 'utf8', function(error, data){
-    if(!error){
-      logger.logInfo(_className, 'Read the index.html file');
-      deferred.resolve(data);
-    } else {
-      logger.logError(_className, 'An error occured while reading the index.html file');
-      deferred.reject(error);
     }
   });
 

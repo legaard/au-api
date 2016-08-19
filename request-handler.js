@@ -5,24 +5,10 @@ var url = require('url'),
 
 var _className = 'HANDLER';
 
-function handleRoot(request, response){
-  var res = builder.createIndexResponse()
-  .then(function(data){
-    response.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'});
-    response.end(data);
-  })
-  .catch(function(){
-    response.writeHead(404, {'Content-Type': 'text/plain; charset=utf-8'});
-    response.end('404: Could not find \'index.html\'');
-  });
-}
-
-
 function handleUndefined(request, response){
   response.writeHead(403, {'Content-Type': 'text/plain; charset=utf-8'});
   response.end('403: Refuse to fulfill request');
 }
-
 
 function handleSchedule(request, response){
   var studentId = url.parse(request.url, true).query.studentId,
