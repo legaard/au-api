@@ -122,8 +122,7 @@ function _updateCookieAndSession(url) {
 
   request.get(options, function (error, response) {
     if (!error && response.statusCode == 200) {
-      logger.logInfo(_className, 'Session set to: ' + url);
-
+    
       var cookieString = response.headers['set-cookie'][0].split(';')[0];
       var cookie = request.cookie(cookieString);
 
