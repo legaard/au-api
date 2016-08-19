@@ -234,7 +234,6 @@ function _jsonpRespons(data, callbackName){
 }
 
 module.exports = {
-  handleRoot: handleRoot,
   handleUndefined: handleUndefined,
   handleSchedule: handleSchedule,
   handleExam: handleExam,

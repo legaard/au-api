@@ -186,6 +186,5 @@ module.exports = {
   createScheduleObject: createScheduleObject,
   createExamObject: createExamObject,
   createClassObject: createClassObject,
-  createIndexResponse: createIndexResponse,
   createTestObject: createTestObject
 };
