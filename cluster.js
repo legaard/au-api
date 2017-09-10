@@ -17,5 +17,5 @@ if(cluster.isMaster){
 
   logger.logInfo(_className, 'Successfully started ' + workersToStart + ' workers');
 } else {
-  require('./server');
+  require('./index');
 }
