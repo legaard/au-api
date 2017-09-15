@@ -1,33 +1,32 @@
+const cheerio = require('cheerio');
+
+const helperFunctions = require('./helper-functions');
+
 function createExamObject(htmlString){
-    
       //Creating the cheerio and build object
-      var build = {};
-      var $ = cheerio.load(htmlString);
-      var $body = $('body');
+      let build = {};
+      const $ = cheerio.load(htmlString);
+      const $body = $('body');
     
       //Retrieving the student name (if it exists)
-      var studentName = $('h2', $body).text();
-      build.studentName =  studentName.indexOf('for') > -1 ? studentName.split('for')[1].trim() : null;
+      const studentName = $('h2', $body).text();
+      build.studentName =  studentName.indexOf('for') > -1 ? studentName.split('for')[1].trim() : undefined;
     
       //Return an error if no student match the id provided
-      if(!build.studentName){
-        logger.logInfo(_className, 'No student match. Error object created');
-        return undefined;
-      }
+      if(!build.studentName) throw new Error('No exams found for student');
     
       //Creating an array for the exams
       build.exams = [];
     
       //Iterating over the tables
-      $('table', $body).each(function(i, element){
-        var examName = $(this).prevAll('h3').first().text();
-        var type = $(this).prevAll('strong').first().text();
-        var tr = $(this).children();
-    
-        //Looping over the table rows
-        for (var k = 0; k < tr.length; k++){
-          var exam = {};
-          var $td = $('td', tr[k]);
+      $('table', $body).each(function(index, element){
+        const examName = $(this).prevAll('h3').first().text();
+        const type = $(this).prevAll('strong').first().text();
+        const $tr = $(this).children();
+
+        $tr.each(function(index, element) {
+          let exam = {};
+          const $td = $('td', element);
     
           //Adding properties to the exam object
           exam.examName = examName;
@@ -37,13 +36,15 @@ function createExamObject(htmlString){
           exam.location = {};
           exam.location.information = $td.eq(3).text().trim();
           exam.location.link = $td.eq(3).children().eq(0).attr('href');
-          exam.class = _URLToClassObject($td.eq(0).children().eq(0).attr('href'));
+          exam.class = helperFunctions.urlToClassObject($td.eq(0).children().eq(0).attr('href'));
           exam.note = $td.eq(5).children().eq(0).text().trim();
     
           //Adding the exam object to the response objects array
           build.exams.push(exam);
-        }
+        });
       });
     
       return build;
     }
+
+    module.exports = { createExamObject };

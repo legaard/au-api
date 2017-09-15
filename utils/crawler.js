@@ -3,6 +3,9 @@ const request = require('request-promise-native');
 const tough = require('tough-cookie');
 
 const logger = require('./logger');
+const classBuilder = require('./builders/class-builder');
+const courseBuilder = require('./builders/course-builder');
+const examBuilder = require('./builders/exam-builder');
 
 const SESSION_UPDATE_INTERVAL = 45;
 
@@ -34,8 +37,16 @@ function getCourseData(studentId) {
 
   return new Promise((resolve, reject) => {
     request(options)
-      .then(response => resolve(decode(response)))
-      .catch(error => reject(error));
+      .then(response => {
+        try {
+          const decodedResponse = decode(response);
+          const courses = courseBuilder.createCoursesObject(decodedResponse);
+          resolve(courses);
+        } catch (error) {
+          reject(error.message);
+        }
+      })
+      .catch(error => reject('Failed to retrieve data from AU'));
   });
 }
 
@@ -72,18 +83,26 @@ function getExamData(quarter, studentId) {
   
   return new Promise((resolve, reject) => {
     request(options)
-      .then(response => resolve(decode(response)))
-      .catch(error => reject(error));
+      .then(response => {
+        try {
+          const decodedResponse = decode(response);
+          const exams = examBuilder.createExamObject(decodedResponse);
+          resolve(exams);
+        } catch (error) {
+          reject(error.message);
+        }
+      })
+      .catch(error => reject('Failed to retrieve data from AU'));
   });
 }
 
-function getClassData(classId, classGroup, className) {
+function getClassData(classId, classGroup, group) {
   classId = encodeToWindows1252(classId);
   classGroup = encodeToWindows1252(classGroup);
-  className = encodeToWindows1252(className);
+  group = encodeToWindows1252(group);
 
-  const url = `${classUrl}?udbud=${classId}&holdgruppe_da=${classGroup}&hold=${className}`;
-
+  const url = `${classUrl}?udbud=${classId}&holdgruppe_${language}=${classGroup}&hold=${group}`;
+  
   var options = {
     uri: url,
     encoding: null,
@@ -92,8 +111,16 @@ function getClassData(classId, classGroup, className) {
 
   return new Promise((resolve, reject) => {
     request(options)
-      .then(response => resolve(decode(response)))
-      .catch(error => reject(error));
+      .then(response => {
+        try {
+          const decodedResponse = decode(response);
+          const classes = classBuilder.createClassObject(decodedResponse);
+          resolve(classes);
+        } catch (error) {
+          reject(error.message);
+        }
+      })
+      .catch(error => reject('Failed to retrieve data from AU'));
   });
 }
 
