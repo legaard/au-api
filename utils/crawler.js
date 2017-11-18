@@ -165,6 +165,7 @@ function updateAllSessions() {
   updateSession(`${examSessionUrl}2&sprog=${language}`, examSecondQuarterJar);
   updateSession(`${examSessionUrl}3&sprog=${language}`, examThirdQuarterJar);
   updateSession(`${examSessionUrl}4&sprog=${language}`, examFourthQuarterJar);
+  logger.info('updated all sessions');
 }
 
 updateAllSessions();

@@ -1,18 +1,20 @@
+const cors = require('cors');
 const express = require('express');
 const network = require('network');
 const bodyParser = require('body-parser');
 
-const classRouter = require('./routes/class-router.js');
-const courseRouter = require('./routes/course-router.js');
-const errorRouter = require('./routes/error-router.js');
-const examRouter = require('./routes/exam-router.js');
-const testRouter = require('./routes/test-router.js');
+const classRouter = require('./routes/class-router');
+const courseRouter = require('./routes/course-router');
+const errorRouter = require('./routes/error-router');
+const examRouter = require('./routes/exam-router');
+const testRouter = require('./routes/test-router');
 const logger = require('./utils/logger');
 
 const app = express();
 const port = process.argv[2] || 8080;
 const apiVersion = 'v1';
 
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
