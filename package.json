@@ -5,7 +5,15 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "docker-build": "docker build -t legaard/au-api .",
+    "docker-remove": "docker rm -f au-api",
+    "docker-start": "docker run -p 80:80 -d --name au-api legaard/au-api",
+    "prod": "npm run docker-remove && npm run docker-build && npm run docker-start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/legaard/au-api"
   },
   "eslintConfig": {
     "parserOptions": {
