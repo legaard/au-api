@@ -15,7 +15,7 @@ router.get('/:quarter/:studentId', (req, res) => {
             logger.info(`successfully served exams (quarter: ${quarter}) for student: ${studentId}`);
         })
         .catch((error) => {
-            res.status(300).send({error});
+            res.status(404).send({error});
             logger.warn(`failed to served exams (quarter: ${quarter}) for student: ${studentId}`);         
         });
 });
