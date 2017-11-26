@@ -4,6 +4,7 @@ const network = require('network');
 const bodyParser = require('body-parser');
 
 const classRouter = require('./routes/class-router');
+const studentRouter = require('./routes/student-router');
 const courseRouter = require('./routes/course-router');
 const errorRouter = require('./routes/error-router');
 const examRouter = require('./routes/exam-router');
@@ -20,6 +21,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.use('/', express.static('public'));
 app.use(`/api/${apiVersion}/classes`, classRouter);
+app.use(`/api/${apiVersion}/student`, studentRouter);
 app.use(`/api/${apiVersion}/courses`, courseRouter);
 app.use(`/api/${apiVersion}/exams`, examRouter);
 app.use(`/api/${apiVersion}/error`, errorRouter);
