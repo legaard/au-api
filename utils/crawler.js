@@ -19,10 +19,8 @@ const language = 'da';
 const examSessionUrl =  `${domain}/apps/skema/VaelgelevSkema.asp?webnavn=eksamen`;
 const coursesSessionUrl = `${domain}/apps/skema/VaelgelevSkema.asp?webnavn=skema`;
 
-const examFirstQuarterJar = request.jar();
-const examSecondQuarterJar = request.jar();
-const examThirdQuarterJar = request.jar();
-const examFourthQuarterJar = request.jar();
+const examWinterJar = request.jar();
+const examSummerJar = request.jar();
 const coursesJar = request.jar();
 
 function getCourseData(studentId) {
@@ -50,24 +48,17 @@ function getCourseData(studentId) {
   });
 }
 
-function getExamData(quarter, studentId) {
+function getExamData(periode, studentId) {
   let examJar;
+  periode = periode.toUpperCase();
   
-  switch (quarter) {
-    case '1': {
-      examJar = examFirstQuarterJar;
+  switch (periode) {
+    case 'V': {
+      examJar = examWinterJar;
       break;
     }
-    case '2': {
-      examJar = examSecondQuarterJar;
-      break;
-    }
-    case '3': {
-      examJar = examThirdQuarterJar;
-      break;
-    }
-    case '4': {
-      examJar = examFourthQuarterJar;
+    case 'S': {
+      examJar = examSummerJar;
       break;
     }
   }
@@ -161,10 +152,8 @@ function encodeToWindows1252(stringToEncode){
 
 function updateAllSessions() {
   updateSession(`${coursesSessionUrl}&sprog=${language}`, coursesJar);
-  updateSession(`${examSessionUrl}1&sprog=${language}`, examFirstQuarterJar);
-  updateSession(`${examSessionUrl}2&sprog=${language}`, examSecondQuarterJar);
-  updateSession(`${examSessionUrl}3&sprog=${language}`, examThirdQuarterJar);
-  updateSession(`${examSessionUrl}4&sprog=${language}`, examFourthQuarterJar);
+  updateSession(`${examSessionUrl}v&sprog=${language}`, examWinterJar);
+  updateSession(`${examSessionUrl}s&sprog=${language}`, examSummerJar);
   logger.info('updated all sessions');
 }
 

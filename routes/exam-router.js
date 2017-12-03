@@ -5,18 +5,18 @@ const logger = require('../utils/logger');
 
 const router = express.Router();
 
-router.get('/:quarter/:studentId', (req, res) => {
+router.get('/:periode/:studentId', (req, res) => {
     const studentId = req.params.studentId;
-    const quarter = req.params.quarter;
+    const periode = req.params.periode;
 
-    crawler.getExamData(quarter, studentId)
+    crawler.getExamData(periode, studentId)
         .then((data) => {
             res.send(data);
-            logger.info(`successfully served exams (quarter: ${quarter}) for student: ${studentId}`);
+            logger.info(`successfully served exams (periode: ${periode}) for student: ${studentId}`);
         })
         .catch((error) => {
             res.status(404).send({error});
-            logger.warn(`failed to served exams (quarter: ${quarter}) for student: ${studentId}`);         
+            logger.warn(`failed to served exams (periode: ${periode}) for student: ${studentId}`);         
         });
 });
 
