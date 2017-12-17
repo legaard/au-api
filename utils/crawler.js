@@ -7,7 +7,7 @@ const classBuilder = require('./builders/class-builder');
 const courseBuilder = require('./builders/course-builder');
 const examBuilder = require('./builders/exam-builder');
 
-const SESSION_UPDATE_INTERVAL = 45;
+const SESSION_UPDATE_INTERVAL = 20;
 
 const domain = 'http://timetable.scitech.au.dk';
 const examAndCoursesUrl = `${domain}/apps/skema/ElevSkema.asp`;

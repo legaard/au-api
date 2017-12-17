@@ -13,11 +13,11 @@ router.get('/:classId/:classGroup/:group', (req, res) => {
     crawler.getClassData(classId, classGroup, group)
         .then((data) => {
             res.send(data);
-            logger.info(`successfully served class data for classId: ${classId}`);
+            logger.info(`successfully served class data for class: ${classId}/${classGroup}/${group}`);
         })
         .catch((error) => {
             res.status(404).send({error});
-            logger.warn(`failed to served class data for classId: ${classId}`);         
+            logger.warn(`failed to served class data for class: ${classId}/${classGroup}/${group}`);         
         });
 });
 

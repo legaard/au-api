@@ -12,7 +12,7 @@ router.get('/:periode/:studentId', (req, res) => {
     crawler.getExamData(periode, studentId)
         .then((data) => {
             res.send(data);
-            logger.info(`successfully served exams (periode: ${periode}) for student: ${studentId}`);
+            logger.info(`successfully served exams (periode: ${periode}) for student: ${studentId}, ${data.studentName}`);
         })
         .catch((error) => {
             res.status(404).send({error});

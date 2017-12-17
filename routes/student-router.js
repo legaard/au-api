@@ -11,11 +11,11 @@ router.get('/:studentId', (req, res) => {
     crawler.getCourseData(studentId)
         .then((data) => {
             res.send({studentName: data.studentName});
-            logger.info(`successfully served student name for studentUd: ${studentId}`);
+            logger.info(`successfully served student name for studentId: ${studentId}`);
         })
         .catch((error) => {
             res.status(404).send({error});
-            logger.warn(`failed to served class data for classId: ${classId}`);         
+            logger.warn(`failed to serve data for studentId: ${classId}`);         
         });
 });
 
