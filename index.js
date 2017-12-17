@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const classRouter = require('./routes/class-router');
 const studentRouter = require('./routes/student-router');
 const courseRouter = require('./routes/course-router');
-const errorRouter = require('./routes/error-router');
+const logRouter = require('./routes/log-router');
 const examRouter = require('./routes/exam-router');
 const testRouter = require('./routes/test-router');
 const logger = require('./utils/logger');
@@ -20,24 +20,21 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.use('/', express.static('public'));
-
 app.use(`/api/${apiVersion}/classes`, classRouter);
 app.use(`/api/${apiVersion}/students`, studentRouter);
 app.use(`/api/${apiVersion}/courses`, courseRouter);
 app.use(`/api/${apiVersion}/exams`, examRouter);
-app.use(`/api/${apiVersion}/error`, errorRouter);
+app.use(`/api/${apiVersion}/log`, logRouter);
 app.use(`/api/${apiVersion}/test`, testRouter);
 
-
 app.use((req, res, next) => {
-  const error = new Error(`page not found: ${req.originalUrl} - requested by IP ${req.ip}`);
-  error.status = 404;
-  next(error);
+  logger.warn(`page not found: ${req.originalUrl} - requested by IP ${req.ip}`);
+  res.sendStatus(404);
 });
 
 app.use((err, req, res, next) => {
-  logger.error(err.message);
-  res.sendStatus(err.status || 500);
+  logger.error(`internal error\n${err.stack}`);
+  res.sendStatus(500);
 });
 
 app.listen(port, () => {
