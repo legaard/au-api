@@ -1,7 +1,7 @@
 const express = require('express');
 
-const logger = require('../utils/logger');
-const authHandler = require('../utils/handlers/authorization-handler');
+const logger = require('../../utils/logger');
+const authHandler = require('../../utils/handlers/authorization-handler');
 
 const router = express.Router();
 

@@ -50,16 +50,19 @@ function getCourseData(studentId) {
 
 function getExamData(periode, studentId) {
   let examJar;
-  periode = periode.toUpperCase();
+  periode = periode.toLowerCase();
   
   switch (periode) {
-    case 'V': {
+    case 'winter': {
       examJar = examWinterJar;
       break;
     }
-    case 'S': {
+    case 'summer': {
       examJar = examSummerJar;
       break;
+    }
+    default: {
+      return Promise.reject('No valid periode provided');
     }
   }
     
@@ -92,7 +95,7 @@ function getClassData(classId, classGroup, group) {
   classGroup = encodeToWindows1252(classGroup);
   group = encodeToWindows1252(group);
 
-  const url = `${classUrl}?udbud=${classId}&holdgruppe_${language}=${classGroup}&hold=${group}`;
+  const url = `${classUrl}?udbud=${classId}&holdgruppe_da=${classGroup}&hold=${group}`;
   
   var options = {
     uri: url,

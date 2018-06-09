@@ -3,12 +3,7 @@ const express = require('express');
 const network = require('network');
 const bodyParser = require('body-parser');
 
-const classRouter = require('./routes/class-router');
-const studentRouter = require('./routes/student-router');
-const courseRouter = require('./routes/course-router');
-const logRouter = require('./routes/log-router');
-const examRouter = require('./routes/exam-router');
-const testRouter = require('./routes/test-router');
+const v1Router = require('./routes/v1/v1-router');
 const logger = require('./utils/logger');
 
 const app = express();
@@ -20,12 +15,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.use('/', express.static('public'));
-app.use(`/api/${apiVersion}/classes`, classRouter);
-app.use(`/api/${apiVersion}/students`, studentRouter);
-app.use(`/api/${apiVersion}/courses`, courseRouter);
-app.use(`/api/${apiVersion}/exams`, examRouter);
-app.use(`/api/${apiVersion}/log`, logRouter);
-app.use(`/api/${apiVersion}/test`, testRouter);
+app.use('/api', v1Router);
 
 app.use((req, res, next) => {
   logger.warn(`page not found: ${req.originalUrl} - requested by IP ${req.ip}`);

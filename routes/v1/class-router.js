@@ -1,11 +1,11 @@
 const express = require('express');
 
-const crawler = require('../utils/crawler');
-const logger = require('../utils/logger');
+const crawler = require('../../utils/crawler');
+const logger = require('../../utils/logger');
 
 const router = express.Router();
 
-router.get('/:classId/:classGroup/:group', (req, res) => {
+router.get('/:classId/class-groups/:classGroup/groups/:group', (req, res) => {
     const classId = req.params.classId;
     const classGroup = req.params.classGroup;
     const group = req.params.group;

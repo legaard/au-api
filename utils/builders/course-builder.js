@@ -31,7 +31,7 @@ function createCoursesObject(htmlString) {
 
       //Adding properties to the course object
       course.courseName = courseName;
-      course.type = removeEndingFromCourseType(type);
+      course.type = type;
       course.day = $td.eq(1).text();
       course.time = $td.eq(2).text().replace(/\s/g, '').trim();
       course.location = {};
@@ -47,32 +47,6 @@ function createCoursesObject(htmlString) {
   });
 
   return build;
-}
-
-function removeEndingFromCourseType(type) {
-  let trimmedType;
-
-  switch (type) {
-    case 'Forelæsninger':
-      trimmedType = 'Forelæsning';
-      break;
-    case 'Teoretiske øvelser':
-      trimmedType = 'Teoretisk øvelse';
-      break;
-    case 'Laboratorieøvelser':
-      trimmedType = 'Laboratorieøvelse';
-      break;
-    case 'Computerøvelser':
-      trimmedType = 'Computerøvelse';
-      break;
-    case 'Øvelser':
-      trimmedType = 'Øvelse';
-      break;
-    default:
-    trimmedType = type;
-  }
-
-  return trimmedType;
 }
 
 module.exports = { createCoursesObject };
