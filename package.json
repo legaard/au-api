@@ -8,7 +8,7 @@
     "dev": "nodemon index.js",
     "docker-build": "docker build -t legaard/au-api .",
     "docker-remove": "docker rm -f au-api",
-    "docker-start": "docker run -p 80:80 -d --name au-api legaard/au-api",
+    "docker-start": "docker run -p 3033:3033 -d --name au-api legaard/au-api",
     "prod": "npm run docker-remove && npm run docker-build && npm run docker-start"
   },
   "repository": {
