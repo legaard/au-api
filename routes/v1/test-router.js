@@ -12,7 +12,7 @@ router.get('/classes/:classId?/:classGroup?/:group?', (req, res) => {
             res.sendStatus(500);
             return;
         }
-        res.send(JSON.parse(data));
+        res.json(JSON.parse(data));
     }); 
 });
 
@@ -23,7 +23,7 @@ router.get('/courses/:studentId?', (req, res) => {
             res.sendStatus(500);
             return;
         }
-        res.send(JSON.parse(data));
+        res.json(JSON.parse(data));
     }); 
 });
 
@@ -34,7 +34,7 @@ router.get('/exams/:quater?/:studentId?', (req, res) => {
             res.sendStatus(500);
             return;
         }
-        res.send(JSON.parse(data));
+        res.json(JSON.parse(data));
     }); 
 });
 
@@ -45,7 +45,7 @@ router.get('/student/:studentId?', (req, res) => {
             res.sendStatus(500);
             return;
         }
-        res.send(JSON.parse(data));
+        res.json(JSON.parse(data));
     }); 
 });
 

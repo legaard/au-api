@@ -19,7 +19,7 @@ function createExamObject(htmlString){
       build.exams = [];
     
       //Iterating over the tables
-      $('table', $body).each(function(index, element){
+      $('table', $body).each(function(i, e){
         const examName = $(this).prevAll('h3').first().text();
         const type = $(this).prevAll('strong').first().text();
         const $tr = $(this).children();

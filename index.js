@@ -8,7 +8,6 @@ const logger = require('./utils/logger');
 
 const app = express();
 const port = process.argv[2] || 8080;
-const apiVersion = 'v1';
 
 app.use(cors());
 app.use(bodyParser.json());

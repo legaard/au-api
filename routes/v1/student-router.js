@@ -10,11 +10,17 @@ router.get('/:studentId', (req, res) => {
 
     crawler.getCourseData(studentId)
         .then((data) => {
-            res.send({studentName: data.studentName});
+            if (!data) {
+                res.sendStatus(404);
+                logger.info(`student ${studentId} not found`);
+                return;
+            }
+
+            res.json({studentName: data.studentName});
             logger.info(`successfully served student name for studentId: ${studentId}`);
         })
         .catch((error) => {
-            res.status(404).send({error});
+            res.status(500).json({message: error});
             logger.warn(`failed to serve data for studentId: ${classId}`);         
         });
 });
@@ -24,11 +30,17 @@ router.get('/:studentId/courses', (req, res) => {
 
     crawler.getCourseData(studentId)
         .then((data) => {
-            res.send(data);
+            if (!data) {
+                res.sendStatus(404);
+                logger.info(`course data not found for studentId: ${studentId}`);
+                return;
+            }
+
+            res.json(data);
             logger.info(`successfully served courses for student: ${studentId}, ${data.studentName}`);
         })
         .catch((error) => {
-            res.status(404).send({error});
+            res.status(500).json({message: error});
             logger.warn(`failed to serve courses for student: ${studentId}`);
         });
 });
@@ -37,19 +49,38 @@ router.get('/:studentId/exams', (req, res) => {
     const studentId = req.params.studentId;
     const periode = req.query.periode;
 
-    if (!periode) {
-        res.status(404).send('Request must contain "periode" as query param, e.g. periode=summer');
-    }
+    if (periode) {
+        crawler.getExamData(studentId, periode.toLowerCase())
+            .then((data) => {
+                if (!data) {
+                    res.sendStatus(404);
+                    logger.info(`exam data not found for studentId: ${studentId}`);
+                    return;
+                }
 
-    crawler.getExamData(periode, studentId)
-        .then((data) => {
-            res.send(data);
-            logger.info(`successfully served exams (periode: ${periode}) for student: ${studentId}, ${data.studentName}`);
-        })
-        .catch((error) => {
-            res.status(404).send({error});
-            logger.warn(`failed to served exams (periode: ${periode}) for student: ${studentId}`);         
-        });
+                res.json(data);
+                logger.info(`successfully served exams (periode: ${periode}) for student: ${studentId}, ${data.studentName}`);
+            })
+            .catch((error) => {
+                res.status(500).json({message: error});
+                logger.warn(`failed to served exams (periode: ${periode}) for student: ${studentId}`);         
+            });
+    } else {
+        crawler.getAllExamData(studentId)
+            .then((data) => {
+                if (!data) {
+                    res.sendStatus(404);
+                    logger.info(`exam data not found for studentId: ${studentId}`);
+                    return;
+                }
+                res.json(data);
+                logger.info(`successfully served exams (periode: ${periode}) for student: ${studentId}, ${data.studentName}`);
+            })
+            .catch((error) => {
+                res.status(500).json({message: error});
+                logger.warn(`failed to served exams (periode: ${periode}) for student: ${studentId}`);  
+            });
+    }
 });
 
 module.exports = router;

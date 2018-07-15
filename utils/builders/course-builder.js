@@ -19,7 +19,7 @@ function createCoursesObject(htmlString) {
   build.courses = [];
 
   //Looping over the tables
-  $('table', $body).each(function (index, element) {
+  $('table', $body).each(function (i, e) {
     const courseName = $(this).prevAll('h3').first().text();
     const type = $(this).prevAll('strong').first().text();
     const $tr = $(this).children();
