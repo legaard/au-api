@@ -14,7 +14,7 @@ const HTTP_METHOD = {
 
 const language = 'da';
 
-const domain = 'http://timetable.scitech.au.dk';
+const domain = 'https://timetable.scitech.au.dk';
 const examAndCoursesUrl = `${domain}/apps/skema/ElevSkema.asp`;
 const classUrl = `${domain}/apps/skema/holdliste.asp`;
 

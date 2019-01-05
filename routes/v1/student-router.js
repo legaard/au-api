@@ -21,7 +21,7 @@ router.get('/:studentId', (req, res) => {
         })
         .catch((error) => {
             res.status(500).json({message: error});
-            logger.warn(`failed to serve data for studentId: ${classId}`);         
+            logger.warn(`failed to serve data for studentId: ${studentId}`);         
         });
 });
 
